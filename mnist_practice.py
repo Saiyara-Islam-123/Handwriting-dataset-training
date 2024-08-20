@@ -18,7 +18,7 @@ matrix = []
 row = []
 matrices = []
 
-labels_and_matrices = []
+
    
 for i in range(1000): #row wise. I'm taking a smaller sample
     for column in df_without_labels: #column wise
@@ -32,8 +32,6 @@ for i in range(1000): #row wise. I'm taking a smaller sample
     #df_main = df_main.append( {"Label" : df["label"][i], "Matrix" : matrix}, ignore_index=True ) 
     matrices.append(matrix)
     
-    labels_and_matrices.append([df["label"][i], matrix])
-    
     row = []
     matrix = []
     
@@ -46,6 +44,7 @@ for i in range(1000): #row wise. I'm taking a smaller sample
 
 matrices_numpy = np.array(matrices)
 input_tensor = torch.tensor(matrices_numpy, dtype=torch.float32)
+
 
 class AutoEncoder(nn.Module):
     
@@ -136,16 +135,13 @@ class LastLayer(nn.Module):
 pretrained_encoder = model
 LastLayer(model)
 
-labels_and_matrices_numpy = np.array(labels_and_matrices)
-labels_and_matrices_tensor = torch.tensor(labels_and_matrices_numpy, dtype=torch.float32)
 
-print("\nStarting supervised part!")
-
+print("\nSupervised part!")
 for epoch in range(10):
     optimizer.zero_grad()
     outputs = model(inputs)
     print(outputs.shape)
-    loss = loss_fn(outputs, labels_and_matrices_tensor)
+    loss = loss_fn(outputs, inputs)
     loss.backward()
     optimizer.step()
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
