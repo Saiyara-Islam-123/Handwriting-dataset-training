@@ -121,28 +121,32 @@ class LastLayer(nn.Module):
     def __init__(self):
         super(LastLayer, self).__init__()
         
-        self.supervised_part = nn.Linear(20, 1)
+        self.supervised_part = nn.Linear(784, 10)
         
         
 
     def forward(self, x):
         x = x.view(x.size(0), -1)
-        x = self.unsupervised_part(x)
+        
+        print("\nThis is x's size.")
+        print(x.shape)
+        
         x = self.supervised_part(x)
         return x
     
     
 pretrained_encoder = model
-model_2 = LastLayer(model)
+model_2 = LastLayer()
 
 
 print("\nSupervised part!")
 for epoch in range(10):
     optimizer.zero_grad()
     outputs_supervised = model_2(outputs)
+    print("\nThis is supervised output")
     print(outputs_supervised.shape)
     loss = loss_fn(outputs_supervised, torch.tensor(labels))
-    loss.backward()
+    loss.backward(retain_graph=True)
     optimizer.step()
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
