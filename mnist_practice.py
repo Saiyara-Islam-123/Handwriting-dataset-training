@@ -17,7 +17,7 @@ df_without_labels = df.drop(columns = "label")
 matrix = []
 row = []
 matrices = []
-
+labels = []
 
    
 for i in range(1000): #row wise. I'm taking a smaller sample
@@ -31,6 +31,7 @@ for i in range(1000): #row wise. I'm taking a smaller sample
             
     #df_main = df_main.append( {"Label" : df["label"][i], "Matrix" : matrix}, ignore_index=True ) 
     matrices.append(matrix)
+    labels.append(df["label"][i])
     
     row = []
     matrix = []
@@ -117,11 +118,10 @@ for epoch in range(10):
 #########################################################################################
 
 class LastLayer(nn.Module):
-    def __init__(self, pretrained_encoder):
+    def __init__(self):
         super(LastLayer, self).__init__()
-        self.unsupervised_part = pretrained_encoder.encoder
         
-        self.supervised_part = nn.Linear(20, 10)
+        self.supervised_part = nn.Linear(20, 1)
         
         
 
@@ -133,15 +133,15 @@ class LastLayer(nn.Module):
     
     
 pretrained_encoder = model
-LastLayer(model)
+model_2 = LastLayer(model)
 
 
 print("\nSupervised part!")
 for epoch in range(10):
     optimizer.zero_grad()
-    outputs = model(inputs)
-    print(outputs.shape)
-    loss = loss_fn(outputs, inputs)
+    outputs_supervised = model_2(outputs)
+    print(outputs_supervised.shape)
+    loss = loss_fn(outputs_supervised, torch.tensor(labels))
     loss.backward()
     optimizer.step()
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
