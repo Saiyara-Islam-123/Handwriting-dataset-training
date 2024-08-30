@@ -20,7 +20,7 @@ matrices = []
 labels = []
 
    
-for i in range(1000): #row wise. I'm taking a smaller sample
+for i in range(100): #row wise. I'm taking a smaller sample
     for column in df_without_labels: #column wise
         column_name = column.split("x")
         row.append(df_without_labels[column][i])
@@ -75,23 +75,6 @@ class AutoEncoder(nn.Module):
             
 
 ####################################################################################################
-class SupervisedNeuralNetwork(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(20, 10), #input of 20. Output of 10
-            nn.ReLU(),
-            nn.Linear(10, 5),
-            nn.ReLU(),
-            nn.Linear(5, 2),
-        )
-
-    def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
-
 
 ####################################################################################################
 
@@ -112,7 +95,12 @@ for epoch in range(10):
     loss = loss_fn(outputs, inputs)
     loss.backward()
     optimizer.step()
+    
+    
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
+    
+    
+torch.save(model.state_dict(), 'autoencoder.pth')
 
 
 #########################################################################################
@@ -121,7 +109,7 @@ class LastLayer(nn.Module):
     def __init__(self):
         super(LastLayer, self).__init__()
         
-        self.supervised_part = nn.Linear(784, 10)
+        self.supervised_part = nn.Linear(784, 1)
         
         
 
@@ -135,8 +123,26 @@ class LastLayer(nn.Module):
         return x
     
     
-pretrained_encoder = model
 model_2 = LastLayer()
+
+pretrained_dict = torch.load('autoencoder.pth')
+model_2_dict = model_2.state_dict()
+filtered_dict = {}
+
+for key in pretrained_dict:
+    if key in model_2_dict and "encoder.2" in key:
+        filtered_dict[key] = pretrained_dict[key]
+
+
+
+model_2_dict.update(filtered_dict)
+
+model_2.load_state_dict(model_2_dict)
+
+
+def custom_loss(output, target):
+    loss = (output - target).pow(2).mean()
+    return loss
 
 
 print("\nSupervised part!")
@@ -145,8 +151,13 @@ for epoch in range(10):
     outputs_supervised = model_2(outputs)
     print("\nThis is supervised output")
     print(outputs_supervised.shape)
-    loss = loss_fn(outputs_supervised, torch.tensor(labels))
-    loss.backward(retain_graph=True)
+    
+    print(torch.tensor(labels).shape)
+    
+    loss = custom_loss(outputs_supervised, torch.tensor(labels))
+   
+    
+    loss.backward(retain_graph=True, create_graph=True)
     optimizer.step()
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
