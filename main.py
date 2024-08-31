@@ -28,8 +28,11 @@ if __name__ == "__main__":
         
         
     torch.save(model.state_dict(), 'autoencoder.pth')
+    
+    autoencoder = neural_networks.AutoEncoder()
 
-    model_2 = neural_networks.LastLayer(model)
+
+    model_2 = neural_networks.LastLayer(autoencoder)
 
     pretrained_dict = torch.load('autoencoder.pth')
     model_2_dict = model_2.state_dict()
@@ -38,7 +41,6 @@ if __name__ == "__main__":
     for key in pretrained_dict:
         if key in model_2_dict and "encoder.2" in key:
             filtered_dict[key] = pretrained_dict[key]
-
 
 
     model_2_dict.update(filtered_dict)
