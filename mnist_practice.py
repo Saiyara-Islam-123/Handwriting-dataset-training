@@ -15,25 +15,21 @@ df_without_labels = df.drop(columns = "label")
 
 
 matrix = []
-row = []
 matrices = []
 labels = []
 
    
-for i in range(100): #row wise. I'm taking a smaller sample
+for i in range(10000): #row wise. I'm taking a smaller sample
     for column in df_without_labels: #column wise
         column_name = column.split("x")
-        row.append(df_without_labels[column][i])
+        matrix.append(df_without_labels[column][i])
         
-        if int(column_name[1]) == 28:
-            matrix.append(row)
-            row = []
             
     #df_main = df_main.append( {"Label" : df["label"][i], "Matrix" : matrix}, ignore_index=True ) 
     matrices.append(matrix)
     labels.append(df["label"][i])
     
-    row = []
+
     matrix = []
     
     
@@ -42,6 +38,8 @@ for i in range(100): #row wise. I'm taking a smaller sample
 
 #df_unsupervised = df_main.drop(columns = "Label")
 #df_supervised = df_main.copy()
+
+
 
 matrices_numpy = np.array(matrices)
 input_tensor = torch.tensor(matrices_numpy, dtype=torch.float32)
@@ -53,7 +51,7 @@ class AutoEncoder(nn.Module):
         super().__init__()
         
         self.encoder = torch.nn.Sequential(
-            nn.Linear(28 ,25),
+            nn.Linear(28 * 28 ,25),
             nn.ReLU(),
             nn.Linear(25, 20),
             nn.ReLU()
@@ -63,7 +61,7 @@ class AutoEncoder(nn.Module):
             
             nn.Linear(20, 25),
             nn.ReLU(),
-            nn.Linear(25 ,28),
+            nn.Linear(25 ,28 * 28),
             nn.ReLU(),
             
         )
@@ -105,11 +103,16 @@ torch.save(model.state_dict(), 'autoencoder.pth')
 
 #########################################################################################
 
+
+
+
 class LastLayer(nn.Module):
-    def __init__(self):
+    def __init__(self, autoencoder):
         super(LastLayer, self).__init__()
         
-        self.supervised_part = nn.Linear(784, 1)
+        self.autoencoder = autoencoder.encoder
+        
+        self.supervised_part = nn.Sequential(nn.Linear(20, 10), nn.ReLU())
         
         
 
@@ -118,12 +121,18 @@ class LastLayer(nn.Module):
         
         print("\nThis is x's size.")
         print(x.shape)
+        x = self.autoencoder(x)
+        
+        print(x.shape)
         
         x = self.supervised_part(x)
+        
+        print(x.shape)
+        
         return x
     
     
-model_2 = LastLayer()
+model_2 = LastLayer(model)
 
 pretrained_dict = torch.load('autoencoder.pth')
 model_2_dict = model_2.state_dict()
@@ -140,24 +149,21 @@ model_2_dict.update(filtered_dict)
 model_2.load_state_dict(model_2_dict)
 
 
-def custom_loss(output, target):
-    loss = (output - target).pow(2).mean()
-    return loss
-
+model_2.train()
 
 print("\nSupervised part!")
 for epoch in range(10):
     optimizer.zero_grad()
-    outputs_supervised = model_2(outputs)
+    outputs_supervised = model_2(input_tensor)
     print("\nThis is supervised output")
     print(outputs_supervised.shape)
     
     print(torch.tensor(labels).shape)
     
-    loss = custom_loss(outputs_supervised, torch.tensor(labels))
+    loss = loss_fn(outputs_supervised, torch.tensor(labels))
    
     
-    loss.backward(retain_graph=True, create_graph=True)
+    loss.backward(create_graph=True, retain_graph = True)
     optimizer.step()
     print(f"Epoch {epoch+1}, Loss: {loss.item()}")
-
+    
