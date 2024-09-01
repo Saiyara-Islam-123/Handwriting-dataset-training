@@ -45,3 +45,4 @@ def get_inputs():
 
 def get_labels():
     return torch.tensor(labels)
+

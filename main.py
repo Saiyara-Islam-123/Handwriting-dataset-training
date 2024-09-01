@@ -2,7 +2,7 @@ import torch
 import create_dataset
 import neural_networks
 from torch import optim
-
+import create_testset
 
 if __name__ == "__main__":
     
@@ -44,8 +44,24 @@ if __name__ == "__main__":
         
         loss = loss_fn(outputs_supervised, create_dataset.get_labels())
        
-        
         loss.backward(create_graph=True, retain_graph = True)
         optimizer.step()
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
         
+    #output_as_numpy = outputs_supervised.detach().numpy()
+    #plt.scatter(output_as_numpy)
+    #plt.title("Plot")
+    
+    
+    #measuring accuracy
+    
+    test_inputs = create_testset.get_inputs()
+    test_labels = create_testset.get_labels()
+    
+    pred_labels = model_2(test_inputs).argmax(dim=1)
+    
+    acc = (pred_labels == test_labels).float().mean().item()
+    
+    print("\nAccuracy = ")
+    print(acc)
+    
