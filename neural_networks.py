@@ -7,17 +7,45 @@ class AutoEncoder(nn.Module):
         super().__init__()
         
         self.encoder = torch.nn.Sequential(
-            nn.Linear(28 * 28 ,25),
+            nn.Linear(28 * 28 ,500),
             nn.ReLU(),
-            nn.Linear(25, 20),
-            nn.ReLU()
+            
+            nn.Dropout(0.5),
+            
+            nn.Linear(500, 300),
+            nn.ReLU(),
+            
+            nn.Linear(300, 100),
+            nn.ReLU(),
+            
+            
+            nn.Linear(100, 50),
+            nn.ReLU(),
+            
+            
+            nn.Linear(50, 20),
+            nn.ReLU(),
+            
         )
         
         self.decoder = torch.nn.Sequential(
             
-            nn.Linear(20, 25),
+            nn.Linear(20, 50),
             nn.ReLU(),
-            nn.Linear(25 ,28 * 28),
+            
+            nn.Linear(50, 100),
+            nn.ReLU(),
+            
+            nn.Dropout(0.5),
+            
+            nn.Linear(100, 300),
+            nn.ReLU(),
+            
+            nn.Linear(300, 500),
+            nn.ReLU(),
+        
+            
+            nn.Linear(500 ,28 * 28),
             nn.ReLU(),
             
         )
