@@ -10,7 +10,7 @@ if __name__ == "__main__":
     model = neural_networks.AutoEncoder()
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     inputs = create_dataset.get_inputs()
 
@@ -26,16 +26,12 @@ if __name__ == "__main__":
         
         
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
-        
+         
     
-    
-    
-    '''
-
     model_2 = neural_networks.LastLayer(model)  
     
     
-
+    '''
     model_2.train()
 
     print("\nSupervised part!")
@@ -67,5 +63,4 @@ if __name__ == "__main__":
     
     print("\nAccuracy = ")
     print(acc * 100)
-    
     '''
