@@ -2,14 +2,15 @@ import torch
 import create_dataset
 import neural_networks
 from torch import optim
-import create_testset
+
+
 
 if __name__ == "__main__":
     
     model = neural_networks.AutoEncoder()
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.01)
 
     inputs = create_dataset.get_inputs()
 
@@ -26,14 +27,14 @@ if __name__ == "__main__":
         
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
         
-        
-    torch.save(model.state_dict(), 'autoencoder.pth')
     
-    autoencoder = neural_networks.AutoEncoder()
-    autoencoder.load_state_dict(torch.load('autoencoder.pth'))
+    
+    
+    '''
 
-    model_2 = neural_networks.LastLayer(autoencoder)  
-
+    model_2 = neural_networks.LastLayer(model)  
+    
+    
 
     model_2.train()
 
@@ -55,13 +56,16 @@ if __name__ == "__main__":
     
     #measuring accuracy
     
-    test_inputs = create_testset.get_inputs()
-    test_labels = create_testset.get_labels()
+    
+    
+    test_inputs = create_dataset.get_test_inputs()
+    test_labels = create_dataset.get_test_labels()
     
     pred_labels = model_2(test_inputs).argmax(dim=1)
     
     acc = (pred_labels == test_labels).float().mean().item()
     
     print("\nAccuracy = ")
-    print(acc)
+    print(acc * 100)
     
+    '''
