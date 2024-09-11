@@ -1,14 +1,13 @@
-import torch
 import create_dataset
 import neural_networks
 from torch import optim
-
+import torch.nn as nn
 
 
 if __name__ == "__main__":
     
     model = neural_networks.AutoEncoder()
-    loss_fn = torch.nn.CrossEntropyLoss()
+    loss_fn = nn.BCELoss()
 
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -31,15 +30,17 @@ if __name__ == "__main__":
     model_2 = neural_networks.LastLayer(model)  
     
     
-    '''
+    
     model_2.train()
+    
+    loss_fn_2 = nn.CrossEntropyLoss()
 
     print("\nSupervised part!")
     for epoch in range(10):
         optimizer.zero_grad()
         outputs_supervised = model_2(inputs)
         
-        loss = loss_fn(outputs_supervised, create_dataset.get_labels())
+        loss = loss_fn_2(outputs_supervised, create_dataset.get_labels())
        
         loss.backward(create_graph=True, retain_graph = True)
         optimizer.step()
@@ -63,4 +64,4 @@ if __name__ == "__main__":
     
     print("\nAccuracy = ")
     print(acc * 100)
-    '''
+    

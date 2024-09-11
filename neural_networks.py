@@ -31,22 +31,21 @@ class AutoEncoder(nn.Module):
         self.decoder = torch.nn.Sequential(
             
             nn.Linear(20, 50),
-            nn.ReLU(True),
+            nn.Sigmoid(),
             
             nn.Linear(50, 100),
-            nn.ReLU(True),
+            nn.Sigmoid(),
             
-            nn.Dropout(0.5),
             
             nn.Linear(100, 300),
-            nn.ReLU(True),
+            nn.Sigmoid(),
             
             nn.Linear(300, 500),
-            nn.ReLU(True),
+            nn.Sigmoid(),
         
             
             nn.Linear(500 ,28 * 28),
-            nn.ReLU(True),
+            nn.Sigmoid(),
             
         )
         
