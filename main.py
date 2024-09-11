@@ -34,7 +34,7 @@ if __name__ == "__main__":
     model_2.train()
     
     loss_fn_2 = nn.CrossEntropyLoss()
-    optimizer_2 = optim.Adam(model.parameters(), lr=0.0065)
+    optimizer_2 = optim.AdamW(model.parameters(), lr=0.007)
 
     print("\nSupervised part!")
     for epoch in range(10):
