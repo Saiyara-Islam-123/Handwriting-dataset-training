@@ -7,9 +7,9 @@ import torch.nn as nn
 if __name__ == "__main__":
     
     model = neural_networks.AutoEncoder()
-    loss_fn = nn.BCELoss()
+    loss_fn = nn.MSELoss()
 
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    optimizer = optim.Adam(model.parameters(), lr=0.0009)
 
     inputs = create_dataset.get_inputs()
 
@@ -34,16 +34,17 @@ if __name__ == "__main__":
     model_2.train()
     
     loss_fn_2 = nn.CrossEntropyLoss()
+    optimizer_2 = optim.Adam(model.parameters(), lr=0.0065)
 
     print("\nSupervised part!")
     for epoch in range(10):
-        optimizer.zero_grad()
+        optimizer_2.zero_grad()
         outputs_supervised = model_2(inputs)
         
         loss = loss_fn_2(outputs_supervised, create_dataset.get_labels())
        
         loss.backward(create_graph=True, retain_graph = True)
-        optimizer.step()
+        optimizer_2.step()
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
         
     #output_as_numpy = outputs_supervised.detach().numpy()
