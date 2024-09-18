@@ -34,7 +34,8 @@ if __name__ == "__main__":
     model_2.train()
     
     loss_fn_2 = nn.CrossEntropyLoss()
-    optimizer_2 = optim.AdamW(model.parameters(), lr=0.007)
+    optimizer_2 = optim.Adam(model.parameters(), lr=0.001)
+
 
     print("\nSupervised part!")
     for epoch in range(10):
@@ -43,7 +44,7 @@ if __name__ == "__main__":
         
         loss = loss_fn_2(outputs_supervised, create_dataset.get_labels())
        
-        loss.backward(create_graph=True, retain_graph = True)
+        loss.backward()
         optimizer_2.step()
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
         

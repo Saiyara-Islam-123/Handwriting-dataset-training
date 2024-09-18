@@ -62,7 +62,7 @@ class LastLayer(nn.Module):
         
         self.autoencoder = autoencoder.encoder
         
-        self.supervised_part = nn.Sequential(nn.Linear(20, 10), nn.ReLU())
+        self.supervised_part = nn.Sequential(nn.Linear(20, 10), nn.Sigmoid())
         
         
 
