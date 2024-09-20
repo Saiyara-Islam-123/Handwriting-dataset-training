@@ -2,6 +2,7 @@ import create_dataset
 import neural_networks
 from torch import optim
 import torch.nn as nn
+import torch
 
 
 if __name__ == "__main__":
@@ -12,18 +13,21 @@ if __name__ == "__main__":
     optimizer = optim.Adam(model.parameters(), lr=0.0009)
 
     inputs = create_dataset.get_inputs()
+    
+    batches = list(torch.split(inputs, 64))
 
 
     print("\nUnsupervised part!")
     for epoch in range(10):
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        print(outputs.shape)
-        loss = loss_fn(outputs, inputs)
-        loss.backward()
-        optimizer.step()
         
-        
+        for batch in batches:
+            optimizer.zero_grad()
+            outputs = model(batch)
+            loss = loss_fn(outputs, batch)
+            loss.backward()
+            optimizer.step()
+            
+            
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
          
     
@@ -36,16 +40,19 @@ if __name__ == "__main__":
     loss_fn_2 = nn.CrossEntropyLoss()
     optimizer_2 = optim.Adam(model.parameters(), lr=0.001)
 
+    batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
 
     print("\nSupervised part!")
     for epoch in range(10):
-        optimizer_2.zero_grad()
-        outputs_supervised = model_2(inputs)
-        
-        loss = loss_fn_2(outputs_supervised, create_dataset.get_labels())
-       
-        loss.backward()
-        optimizer_2.step()
+
+        for i in range(len(batches)):
+            optimizer_2.zero_grad()
+            outputs_supervised = model_2(batches[i])
+
+            loss = loss_fn_2(outputs_supervised, batches_of_labels[i])
+
+            loss.backward()
+            optimizer_2.step()
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
         
     #output_as_numpy = outputs_supervised.detach().numpy()
@@ -55,7 +62,7 @@ if __name__ == "__main__":
     
     #measuring accuracy
     
-    
+
     
     test_inputs = create_dataset.get_test_inputs()
     test_labels = create_dataset.get_test_labels()
