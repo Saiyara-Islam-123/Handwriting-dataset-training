@@ -28,6 +28,7 @@ def get_inputs():
     
     return images.view(images.size(0), -1)
 
+
 def get_labels():
     return torch.tensor([train_data[i][1] for i in range(len(train_data))])
 

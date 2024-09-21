@@ -4,13 +4,13 @@ from torch import optim
 import torch.nn as nn
 import torch
 
-
 if __name__ == "__main__":
+
     
     model = neural_networks.AutoEncoder()
     loss_fn = nn.MSELoss()
 
-    optimizer = optim.Adam(model.parameters(), lr=0.0009)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     inputs = create_dataset.get_inputs()
     
@@ -43,27 +43,24 @@ if __name__ == "__main__":
     batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
 
     print("\nSupervised part!")
+
     for epoch in range(10):
 
         for i in range(len(batches)):
             optimizer_2.zero_grad()
             outputs_supervised = model_2(batches[i])
-
             loss = loss_fn_2(outputs_supervised, batches_of_labels[i])
 
             loss.backward()
             optimizer_2.step()
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
-        
-    #output_as_numpy = outputs_supervised.detach().numpy()
-    #plt.scatter(output_as_numpy)
-    #plt.title("Plot")
+
     
     
     #measuring accuracy
-    
 
-    
+
+    '''
     test_inputs = create_dataset.get_test_inputs()
     test_labels = create_dataset.get_test_labels()
     
@@ -74,3 +71,5 @@ if __name__ == "__main__":
     print("\nAccuracy = ")
     print(acc * 100)
     
+    '''
+
