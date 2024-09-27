@@ -3,6 +3,7 @@ import neural_networks
 from torch import optim
 import torch.nn as nn
 import torch
+import pca
 
 if __name__ == "__main__":
 
@@ -23,18 +24,17 @@ if __name__ == "__main__":
         for batch in batches:
             optimizer.zero_grad()
             outputs = model(batch)
+            #print(outputs.shape)
+
             loss = loss_fn(outputs, batch)
             loss.backward()
             optimizer.step()
             
             
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
-         
-    
+
     model_2 = neural_networks.LastLayer(model)  
-    
-    
-    
+
     model_2.train()
     
     loss_fn_2 = nn.CrossEntropyLoss()
@@ -44,15 +44,22 @@ if __name__ == "__main__":
 
     print("\nSupervised part!")
 
+    ###################################################################################################
+
     for epoch in range(10):
 
         for i in range(len(batches)):
             optimizer_2.zero_grad()
             outputs_supervised = model_2(batches[i])
+
+            print(outputs_supervised.shape)
+
             loss = loss_fn_2(outputs_supervised, batches_of_labels[i])
 
             loss.backward()
             optimizer_2.step()
+
+
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
     
