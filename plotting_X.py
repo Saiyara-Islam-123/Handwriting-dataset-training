@@ -14,32 +14,30 @@ labels_colors = {1 : "b",
                  0: "pink"
                  }
 
-if __name__ == '__main__':
-    X = create_dataset.get_inputs()
-    y_np = create_dataset.get_labels().numpy()
+def plot(X, y, epoch):
     X_pca = pca.pca_of_two(X)
+    y_np = y.numpy()
 
     pc1 = X_pca[:, 0]
     pc2 = X_pca[:, 1]
 
 
-    for i in range(2000):
+    for i in range(y.shape[0]):
         
-        x = pc1[i]
-        y = pc2[i]
+        x_axis = pc1[i]
+        y_axis = pc2[i]
 
         color = labels_colors[y_np[i]]
 
-        plt.scatter(x, y, color=color, s=1)
+        plt.scatter(x_axis, y_axis, color=color, s=1)
 
-    plt.title('X sample scatter plot pre-training')
+    plt.title('X sample scatter plot during training '  + str(epoch))
     plt.xlabel('PC1')
     plt.ylabel('PC2')
     plt.grid(True)
 
-    plt.savefig("X pre-training scatter plot for sample")
+    plt.savefig("X during training scatter plot for sample " + str(epoch))
     plt.show()
-
 
 
 

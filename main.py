@@ -3,7 +3,8 @@ import neural_networks
 from torch import optim
 import torch.nn as nn
 import torch
-import pca
+import plotting_X
+import random
 
 if __name__ == "__main__":
 
@@ -52,12 +53,27 @@ if __name__ == "__main__":
             optimizer_2.zero_grad()
             outputs_supervised = model_2(batches[i])
 
-            print(outputs_supervised.shape)
+            #print(outputs_supervised.shape)
 
             loss = loss_fn_2(outputs_supervised, batches_of_labels[i])
 
             loss.backward()
             optimizer_2.step()
+
+
+        sample_tensors = []
+        sample_labels = []
+        for j in range(31):
+            index = random.randint(0, len(batches)-1)
+            sample_tensors.append(batches[index])
+            sample_labels.append(batches_of_labels[index])
+
+
+        sample_batch_x = torch.cat(sample_tensors, dim=0)
+        sample_batch_y = torch.cat(sample_labels, dim=0)
+
+
+        plotting_X.plot(sample_batch_x, sample_batch_y, epoch)
 
 
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
