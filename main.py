@@ -91,7 +91,7 @@ if __name__ == "__main__":
     plt.plot(list(range(len(within))), within, label='Within 1', marker='o', color='blue')  # First line with markers
     plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "green")  # Second line with different markers
 
-    plt.xlabel("Indices")
+    plt.xlabel("Phases")
     plt.ylabel("Distances")
     plt.title("Distance between 1 and 0 and within 1 before, during and after both training")
     plt.savefig("Distance between 1 and 0 and within 1 before, during and after both training.png.")
