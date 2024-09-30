@@ -3,10 +3,19 @@ import neural_networks
 from torch import optim
 import torch.nn as nn
 import torch
-import plotting_X
-import random
+from sampling import *
+
+
 
 if __name__ == "__main__":
+
+    X = create_dataset.get_inputs()
+    y = create_dataset.get_labels()
+
+    pair_avg_distances = {}
+    pair_avg_distances[(1,1)] = [sampled_avg_distance((1, 1), X , y)]
+    pair_avg_distances[(1, 0)] = [sampled_avg_distance((1, 0), X, y)]
+    #pair_avg_distances[(2, 7)] = [sampled_avg_distance((2, 7), X, y)]
 
     
     model = neural_networks.AutoEncoder()
@@ -21,16 +30,22 @@ if __name__ == "__main__":
 
     print("\nUnsupervised part!")
     for epoch in range(10):
-        
+
+        outputs_list = []
         for batch in batches:
             optimizer.zero_grad()
             outputs = model(batch)
+            outputs_list.append(outputs)
+
             #print(outputs.shape)
 
             loss = loss_fn(outputs, batch)
             loss.backward()
             optimizer.step()
-            
+
+
+        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_list, dim=0), y)]
+        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_list, dim=0), y)]
             
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
@@ -43,15 +58,19 @@ if __name__ == "__main__":
 
     batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
 
+
+
     print("\nSupervised part!")
 
     ###################################################################################################
 
     for epoch in range(10):
-
+        outputs_supervised_list = []
         for i in range(len(batches)):
             optimizer_2.zero_grad()
             outputs_supervised = model_2(batches[i])
+
+            outputs_supervised_list.append(outputs_supervised)
 
             #print(outputs_supervised.shape)
 
@@ -60,26 +79,25 @@ if __name__ == "__main__":
             loss.backward()
             optimizer_2.step()
 
-
-        sample_tensors = []
-        sample_labels = []
-        for j in range(31):
-            index = random.randint(0, len(batches)-1)
-            sample_tensors.append(batches[index])
-            sample_labels.append(batches_of_labels[index])
+        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_supervised_list, dim=0), y)]
+        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_supervised_list, dim=0), y)]
 
 
-        sample_batch_x = torch.cat(sample_tensors, dim=0)
-        sample_batch_y = torch.cat(sample_labels, dim=0)
+    within = pair_avg_distances[(1,1)]
+    between = pair_avg_distances[(1,0)]
 
 
-        plotting_X.plot(sample_batch_x, sample_batch_y, epoch)
+
+    plt.plot(list(range(len(within))), within, label='Within 1', marker='o', color='blue')  # First line with markers
+    plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "green")  # Second line with different markers
+
+    plt.xlabel("Indices")
+    plt.ylabel("Distances")
+    plt.title("Distance between 1 and 0 and within 1 before, during and after both training")
+    plt.savefig("Distance between 1 and 0 and within 1 before, during and after both training.png.")
+    plt.show()
 
 
-        print(f"Epoch {epoch+1}, Loss: {loss.item()}")
-
-    
-    
     #measuring accuracy
 
 
