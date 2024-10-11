@@ -12,9 +12,9 @@ if __name__ == "__main__":
     X = create_dataset.get_inputs()
     y = create_dataset.get_labels()
 
-    pair_avg_distances = {}
-    pair_avg_distances[(1,1)] = [sampled_avg_distance((1, 1), X , y)]
-    pair_avg_distances[(1, 0)] = [sampled_avg_distance((1, 0), X, y)]
+    #pair_avg_distances = {}
+    #pair_avg_distances[(1,1)] = [sampled_avg_distance((1, 1), X , y)]
+    #pair_avg_distances[(1, 0)] = [sampled_avg_distance((1, 0), X, y)]
     #pair_avg_distances[(2, 7)] = [sampled_avg_distance((2, 7), X, y)]
 
     
@@ -34,6 +34,8 @@ if __name__ == "__main__":
         outputs_list = []
         for batch in batches:
             optimizer.zero_grad()
+            #print(batch.shape)
+
             outputs = model(batch)
             outputs_list.append(outputs)
 
@@ -44,17 +46,19 @@ if __name__ == "__main__":
             optimizer.step()
 
 
-        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_list, dim=0), y)]
-        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_list, dim=0), y)]
             
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
+
 
     model_2 = neural_networks.LastLayer(model)  
 
     model_2.train()
     
     loss_fn_2 = nn.CrossEntropyLoss()
-    optimizer_2 = optim.Adam(model.parameters(), lr=0.001)
+    optimizer_2 = optim.Adam(model.parameters(), lr=0.01)
+
 
     batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
 
@@ -68,9 +72,11 @@ if __name__ == "__main__":
         outputs_supervised_list = []
         for i in range(len(batches)):
             optimizer_2.zero_grad()
+
+            #print(batches[i].shape)
             outputs_supervised = model_2(batches[i])
 
-            outputs_supervised_list.append(outputs_supervised)
+            #outputs_supervised_list.append(outputs_supervised)
 
             #print(outputs_supervised.shape)
 
@@ -79,29 +85,31 @@ if __name__ == "__main__":
             loss.backward()
             optimizer_2.step()
 
-        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_supervised_list, dim=0), y)]
-        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_supervised_list, dim=0), y)]
+        print(f"Epoch {epoch + 1}, Loss: {loss.item()}")
+
+        #pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_supervised_list, dim=0), y)]
+        #pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_supervised_list, dim=0), y)]
 
 
-    within = pair_avg_distances[(1,1)]
-    between = pair_avg_distances[(1,0)]
+    #within = pair_avg_distances[(1,1)]
+    #between = pair_avg_distances[(1,0)]
 
 
 
-    plt.plot(list(range(len(within))), within, label='Within 1', marker='o', color='blue')  # First line with markers
-    plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "green")  # Second line with different markers
+    #plt.plot(list(range(len(within))), within, label='Within 1', marker='o', color='blue')  # First line with markers
+    #plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "green")  # Second line with different markers
 
-    plt.xlabel("Phases")
-    plt.ylabel("Distances")
-    plt.title("Distance between 1 and 0 and within 1 before, during and after both training")
-    plt.savefig("Distance between 1 and 0 and within 1 before, during and after both training.png.")
-    plt.show()
-
+    #plt.xlabel("Phases")
+    #plt.ylabel("Distances")
+    #plt.title("Distance between 1 and 0 and within 1 before, during and after both training")
+    #plt.savefig("Distance between 1 and 0 and within 1 before, during and after both training.png.")
+    #plt.show()
+    
 
     #measuring accuracy
 
 
-    '''
+
     test_inputs = create_dataset.get_test_inputs()
     test_labels = create_dataset.get_test_labels()
     
@@ -112,5 +120,4 @@ if __name__ == "__main__":
     print("\nAccuracy = ")
     print(acc * 100)
     
-    '''
 

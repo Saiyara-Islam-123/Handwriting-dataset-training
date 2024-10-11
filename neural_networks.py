@@ -8,31 +8,22 @@ class AutoEncoder(nn.Module):
         super().__init__()
         
         self.encoder = torch.nn.Sequential(
-            nn.Linear(28 * 28 ,500),
-            nn.ReLU(True),
-            
-            
-            nn.Linear(500, 100),
-            nn.ReLU(True),
-            
-            
-            nn.Linear(100, 64),
-            nn.ReLU(True),
+
+            nn.Conv2d(1, 1, kernel_size=2, stride=2, padding=0),
+            nn.ReLU(),
+
+            nn.Conv2d(1, 1, kernel_size=2, stride=2, padding=0),
+            nn.ReLU(),
             
         )
         
         self.decoder = torch.nn.Sequential(
-                    
-            
-            nn.Linear(64, 100),
-            nn.ReLU(True),
-            
-            nn.Linear(100, 500),
-            nn.ReLU(True),
-        
-            
-            nn.Linear(500 ,28 * 28),
-            nn.Sigmoid(),
+
+            nn.Conv2d(1, 1, kernel_size=2, stride=2, padding=0),
+            nn.ReLU(),
+
+            nn.Conv2d(1, 1, kernel_size=2, stride=2, padding=0),
+            nn.ReLU(),
             
         )
         
@@ -49,18 +40,16 @@ class LastLayer(nn.Module):
         
         self.autoencoder = autoencoder.encoder
         
-        self.supervised_part = nn.Sequential(nn.Linear(64, 10))
+        self.supervised_part = nn.Sequential(nn.Linear(49, 10))
         
         
 
     def forward(self, x):
-        x = x.view(x.size(0), -1)
-        
-       
+
         x = self.autoencoder(x)
-        
-        
-        
+
+        x = x.view(x.size(0), -1)
+
         x = self.supervised_part(x)
         
     

@@ -26,7 +26,7 @@ def get_inputs():
     
     images = torch.stack([train_data[i][0] for i in range(len(train_data))])
     
-    return images.view(images.size(0), -1)
+    return images
 
 
 def get_labels():
@@ -36,7 +36,7 @@ def get_labels():
 def get_test_inputs():
     images = torch.stack([test_data[i][0] for i in range(len(test_data))])
     
-    return images.view(images.size(0), -1)
+    return images
 
 def get_test_labels():
     return torch.tensor([test_data[i][1] for i in range(len(test_data))])
