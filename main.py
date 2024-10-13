@@ -2,7 +2,7 @@
 import neural_networks
 from torch import optim
 import torch.nn as nn
-
+import plotting_X
 from sampling import *
 
 
@@ -12,10 +12,16 @@ if __name__ == "__main__":
     X = create_dataset.get_inputs()
     y = create_dataset.get_labels()
 
-    pair_avg_distances = {}
-    pair_avg_distances[(1,1)] = [sampled_avg_distance((1, 1), X , y)]
-    pair_avg_distances[(1, 0)] = [sampled_avg_distance((1, 0), X, y)]
-    #pair_avg_distances[(4, 9)] = [sampled_avg_distance((4, 7), X, y)]
+    #pair_avg_distances = {}
+    #pair_avg_distances[(4,4)] = [sampled_avg_distance((4, 4), X , y)]
+    #pair_avg_distances[(4, 9)] = [sampled_avg_distance((4, 9), X, y)]
+
+    #X_filtered, y_filtered = plotting_X.filter(X, y, [1, 0, 4, 9])
+
+    #print(X_filtered.shape)
+
+    #plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1)
+
 
     
     model = neural_networks.AutoEncoder()
@@ -46,8 +52,8 @@ if __name__ == "__main__":
             optimizer.step()
 
 
-        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_list, dim=0), y)]
-        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_list, dim=0), y)]
             
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
@@ -87,23 +93,23 @@ if __name__ == "__main__":
 
         print(f"Epoch {epoch + 1}, Loss: {loss.item()}")
 
-        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_supervised_list, dim=0), y)]
-        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_supervised_list, dim=0), y)]
+        #pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_supervised_list, dim=0), y)]
+        #pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_supervised_list, dim=0), y)]
 
 
-    within = pair_avg_distances[(1,1)]
-    between = pair_avg_distances[(1,0)]
+    #within = pair_avg_distances[(4,4)]
+    #between = pair_avg_distances[(4,9)]
 
 
 
-    plt.plot(list(range(len(within))), within, label='Within 1', marker='o', color='green')  # First line with markers
-    plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "blue")  # Second line with different markers
+    #plt.plot(list(range(len(within))), within, label='Within 4', marker='o', color='green')  # First line with markers
+    #plt.plot(list(range(len(between))), between, label='Between 4 and 9', marker='x', color = "blue")  # Second line with different markers
 
-    plt.xlabel("Phases")
-    plt.ylabel("Distances")
-    plt.title("Distance between 1 and 0 and within 1 before, during and after both training CNN")
-    plt.savefig("Distance between 1 and 0 and within 1 before, during and after both training.png CNN.")
-    plt.show()
+    #plt.xlabel("Phases")
+    #plt.ylabel("Distances")
+    #plt.title("Distance between 4 and 9 and within 4 before, during and after both training CNN")
+    #plt.savefig("Distance between 4 and 9 and within 4 before, during and after both training.png CNN.")
+    #plt.show()
     
 
     #measuring accuracy

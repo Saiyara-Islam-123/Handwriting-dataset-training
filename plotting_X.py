@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pca
 import create_dataset
+import torch
 
 labels_colors = {1 : "b",
                  2: "g",
@@ -14,8 +15,23 @@ labels_colors = {1 : "b",
                  0: "pink"
                  }
 
+def filter(X, y, list_digits):
+    X_filtered = []
+    y_filtered = []
+
+    for i in range(y.shape[0]):
+        if y[i] in list_digits:
+            y_filtered.append(y[i])
+            X_filtered.append(X[i])
+
+
+    return torch.stack(X_filtered), torch.stack(y_filtered)
+
+
+
+
 def plot(X, y, epoch):
-    X_pca = pca.pca_of_two(X)
+    X_pca = pca.pca_of_two(X.numpy())
     y_np = y.numpy()
 
     pc1 = X_pca[:, 0]
@@ -40,6 +56,7 @@ def plot(X, y, epoch):
     plt.show()
 
 
+if __name__ == '__main__':
+    x,y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1, 4,9]))
 
-
-
+    print(x.size(), y.size())

@@ -21,11 +21,16 @@ def sampled_avg_distance(pair, X, y):
         index1 = random.randint(0, 400)
         index2 = random.randint(0, 400)
 
+
+
         distances.append(abs(torch.norm(X_first[index1]- X_second[index2])))
 
     return (sum(distances) / len(distances)).item()
 
+#I basically find the Euclidean distance between two random datapoints from these two bigger matrices.
+
+
 
 if __name__ == '__main__':
-    print(sampled_avg_distance((1,0),create_dataset.get_inputs(), create_dataset.get_labels()))
-    print(sampled_avg_distance((1, 1), create_dataset.get_inputs(), create_dataset.get_labels()))
+    print(sampled_avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels()))
+    print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))
