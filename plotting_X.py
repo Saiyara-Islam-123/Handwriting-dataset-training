@@ -19,7 +19,8 @@ def filter(X, y, list_digits):
     X_filtered = []
     y_filtered = []
 
-    for i in range(y.shape[0]):
+    for i in range(5000):
+
         if y[i] in list_digits:
             y_filtered.append(y[i])
             X_filtered.append(X[i])
@@ -30,8 +31,8 @@ def filter(X, y, list_digits):
 
 
 
-def plot(X, y, epoch):
-    X_pca = pca.pca_of_two(X.numpy())
+def plot(X, y, epoch, is_sup):
+    X_pca = pca.pca_of_two(X.view(X.shape[0], -1).detach().numpy())
     y_np = y.numpy()
 
     pc1 = X_pca[:, 0]
@@ -47,16 +48,19 @@ def plot(X, y, epoch):
 
         plt.scatter(x_axis, y_axis, color=color, s=1)
 
-    plt.title('X sample scatter plot during training '  + str(epoch))
+    plt.title('X sample scatter plot during ' + is_sup + ' training '  + str(epoch))
     plt.xlabel('PC1')
     plt.ylabel('PC2')
     plt.grid(True)
 
-    plt.savefig("X during training scatter plot for sample " + str(epoch))
+    plt.savefig(is_sup + "X during training scatter plot for sample " + str(epoch))
     plt.show()
 
 
 if __name__ == '__main__':
-    x,y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1, 4,9]))
+    '''
+    X,y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1, 4,9]))
 
-    print(x.size(), y.size())
+    #plot(X.reshape(X.shape[0], 784), y, -1)
+    
+    '''

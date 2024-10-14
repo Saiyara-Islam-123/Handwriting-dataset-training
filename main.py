@@ -2,7 +2,7 @@
 import neural_networks
 from torch import optim
 import torch.nn as nn
-import plotting_X
+from plotting_X import *
 from sampling import *
 
 
@@ -32,6 +32,7 @@ if __name__ == "__main__":
     inputs = create_dataset.get_inputs()
     
     batches = list(torch.split(inputs, 64))
+    batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
 
 
     print("\nUnsupervised part!")
@@ -45,12 +46,15 @@ if __name__ == "__main__":
             outputs = model(batch)
             outputs_list.append(outputs)
 
+
             #print(outputs.shape)
 
             loss = loss_fn(outputs, batch)
             loss.backward()
             optimizer.step()
 
+        outputs_filtered, y_filtered = filter(torch.cat(outputs_list), y, [1, 0, 4, 9])
+        plot(outputs_filtered, y_filtered, epoch, "unsup")
 
         #pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_list, dim=0), y)]
         #pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_list, dim=0), y)]
@@ -66,7 +70,7 @@ if __name__ == "__main__":
     optimizer_2 = optim.Adam(model.parameters(), lr=0.01)
 
 
-    batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
+
 
 
 
@@ -86,10 +90,15 @@ if __name__ == "__main__":
 
             #print(outputs_supervised.shape)
 
+
+
             loss = loss_fn_2(outputs_supervised, batches_of_labels[i])
 
             loss.backward()
             optimizer_2.step()
+
+        outputs_sup_filtered, y_filtered_sup = filter(torch.cat(outputs_supervised_list), y, [1, 0, 4, 9])
+        plot(outputs_sup_filtered, y_filtered_sup, epoch, "sup")
 
         print(f"Epoch {epoch + 1}, Loss: {loss.item()}")
 
