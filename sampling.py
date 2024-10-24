@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import random
-import torch
+import torch.nn.functional
 import create_dataset
 
 def sampled_avg_distance(pair, X, y):
@@ -21,11 +21,19 @@ def sampled_avg_distance(pair, X, y):
         index1 = random.randint(0, 400)
         index2 = random.randint(0, 400)
 
+        mat_1 = X_first[index1]
+        mat_2 = X_second[index2]
 
+        mat_1_flattened = mat_1.view(mat_1.size(0), -1)
+        mat_2_flattened = mat_2.view(mat_2.size(0), -1)
 
-        distances.append(abs(torch.norm(X_first[index1]- X_second[index2])))
+        mat_1_flattened_normalized = torch.nn.functional.normalize(mat_1_flattened, p=2, dim=1)
+        mat_2_flattened_normalized = torch.nn.functional.normalize(mat_2_flattened, p=2, dim=1)
+
+        distances.append(torch.norm(mat_1_flattened_normalized - mat_2_flattened_normalized))
 
     return (sum(distances) / len(distances)).item()
+
 
 #I basically find the Euclidean distance between two random datapoints from these two bigger matrices.
 

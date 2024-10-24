@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import pca
+import tnse
 import create_dataset
 import torch
 
@@ -32,11 +32,11 @@ def filter(X, y, list_digits):
 
 
 def plot(X, y, epoch, is_sup):
-    X_pca = pca.pca_of_two(X.view(X.shape[0], -1).detach().numpy())
+    X_tnse = tnse.of_two(X.view(X.shape[0], -1).detach().numpy())
     y_np = y.numpy()
 
-    pc1 = X_pca[:, 0]
-    pc2 = X_pca[:, 1]
+    pc1 = X_tnse[:, 0]
+    pc2 = X_tnse[:, 1]
 
 
     for i in range(y.shape[0]):
@@ -58,9 +58,6 @@ def plot(X, y, epoch, is_sup):
 
 
 if __name__ == '__main__':
-    '''
     X,y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1, 4,9]))
 
-    #plot(X.reshape(X.shape[0], 784), y, -1)
-    
-    '''
+    plot(X.reshape(X.shape[0], 784), y, -1, "Pre-training")

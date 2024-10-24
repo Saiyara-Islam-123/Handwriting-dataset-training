@@ -51,12 +51,15 @@ class LastLayer(nn.Module):
     def __init__(self, autoencoder):
         super(LastLayer, self).__init__()
 
+        self.autoencoder_output = None
         self.autoencoder = autoencoder.encoder
 
         self.supervised_part = nn.Sequential(nn.Linear(128, 10))
 
     def forward(self, x):
         x = self.autoencoder(x)
+
+        self.autoencoder_output = x
 
         x = x.view(x.size(0), -1)
 

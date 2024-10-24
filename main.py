@@ -2,7 +2,6 @@
 import neural_networks
 from torch import optim
 import torch.nn as nn
-from plotting_X import *
 from sampling import *
 
 
@@ -40,13 +39,10 @@ if __name__ == "__main__":
         outputs_list = []
         for batch in batches:
             optimizer.zero_grad()
-            #print(batch.shape)
 
             outputs = model(batch)
             outputs_list.append(outputs)
 
-
-            #print(outputs.shape)
 
             loss = loss_fn(outputs, batch)
             loss.backward()
@@ -62,29 +58,28 @@ if __name__ == "__main__":
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
 
+
     model_2 = neural_networks.LastLayer(model)  
 
     model_2.train()
     
     loss_fn_2 = nn.CrossEntropyLoss()
     optimizer_2 = optim.Adam(model.parameters(), lr=0.01)
+    
+
+
 
     print("\nSupervised part!")
 
     ###################################################################################################
 
     for epoch in range(10):
-        outputs_supervised_list = []
+        outputs_autoencoder_list = []
         for i in range(len(batches)):
             optimizer_2.zero_grad()
 
-            #print(batches[i].shape)
             outputs_supervised = model_2(batches[i])
-
-            outputs_supervised_list.append(outputs_supervised)
-
-            #print(outputs_supervised.shape)
-
+            outputs_autoencoder_list.append(model_2.autoencoder_output)
 
 
             loss = loss_fn_2(outputs_supervised, batches_of_labels[i])
@@ -97,9 +92,11 @@ if __name__ == "__main__":
 
         print(f"Epoch {epoch + 1}, Loss: {loss.item()}")
 
-        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_supervised_list, dim=0), y)]
-        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_supervised_list, dim=0), y)]
-        pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.cat(outputs_supervised_list, dim=0), y)]
+        print(model_2.autoencoder_output.shape)
+
+        pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.cat(outputs_autoencoder_list, dim=0), y)]
+        pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.cat(outputs_autoencoder_list, dim=0), y)]
+        pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.cat(outputs_autoencoder_list, dim=0), y)]
 
     within_1 = pair_avg_distances[(1,1)]
     within_0 = pair_avg_distances[(0, 0)]
@@ -132,4 +129,3 @@ if __name__ == "__main__":
     print("\nAccuracy = ")
     print(acc * 100)
     
-
