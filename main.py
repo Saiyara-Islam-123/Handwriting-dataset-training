@@ -3,6 +3,7 @@ import neural_networks
 from torch import optim
 import torch.nn as nn
 from sampling import *
+import plotting_X
 
 
 
@@ -11,16 +12,16 @@ if __name__ == "__main__":
     X = create_dataset.get_inputs()
     y = create_dataset.get_labels()
 
-    pair_avg_distances = {}
-    pair_avg_distances[(4,4)] = [sampled_avg_distance((4, 4), X , y)]
-    pair_avg_distances[(4, 9)] = [sampled_avg_distance((4, 9), X, y)]
-    pair_avg_distances[(9, 9)] = [sampled_avg_distance((9, 9), X, y)]
+    #pair_avg_distances = {}
+    #pair_avg_distances[(4,4)] = [sampled_avg_distance((4, 4), X , y)]
+    #pair_avg_distances[(4, 9)] = [sampled_avg_distance((4, 9), X, y)]
+    #pair_avg_distances[(9, 9)] = [sampled_avg_distance((9, 9), X, y)]
 
-    #X_filtered, y_filtered = plotting_X.filter(X, y, [1, 0, 4, 9])
+    X_filtered, y_filtered = plotting_X.filter(X, y, [1, 0, 4, 9])
 
     #print(X_filtered.shape)
 
-    #plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1)
+    plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1, "pre-training")
     
     model = neural_networks.AutoEncoder()
     loss_fn = nn.MSELoss()
@@ -48,12 +49,12 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
 
-        #outputs_filtered, y_filtered = filter(torch.cat(outputs_list), y, [1, 0, 4, 9])
-        #plot(outputs_filtered, y_filtered, epoch, "unsup")
+        outputs_filtered, y_filtered = plotting_X.filter(torch.cat(outputs_list), y, [1, 0, 4, 9])
+        plotting_X.plot(outputs_filtered, y_filtered, epoch, "unsup")
 
-        pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_list, dim=0), y)]
-        pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_list, dim=0), y)]
-        pair_avg_distances[(9, 9)] = pair_avg_distances[(9, 9)] + [sampled_avg_distance((9, 9), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_list, dim=0), y)]
+        #pair_avg_distances[(9, 9)] = pair_avg_distances[(9, 9)] + [sampled_avg_distance((9, 9), torch.cat(outputs_list, dim=0), y)]
             
         print(f"Epoch {epoch+1}, Loss: {loss.item()}")
 
@@ -87,23 +88,23 @@ if __name__ == "__main__":
             loss.backward()
             optimizer_2.step()
 
-        #outputs_sup_filtered, y_filtered_sup = filter(torch.cat(outputs_supervised_list), y, [1, 0, 4, 9])
-        #plot(outputs_sup_filtered, y_filtered_sup, epoch, "sup")
+        outputs_sup_filtered, y_filtered_sup = plotting_X.filter(torch.cat(outputs_autoencoder_list), y, [1, 0, 4, 9])
+        plotting_X.plot(outputs_sup_filtered, y_filtered_sup, epoch, "sup")
 
         print(f"Epoch {epoch + 1}, Loss: {loss.item()}")
 
         #print(model_2.autoencoder_output.shape)
 
-        pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_autoencoder_list, dim=0), y)]
-        pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_autoencoder_list, dim=0), y)]
-        pair_avg_distances[(9, 9)] = pair_avg_distances[(9, 9)] + [sampled_avg_distance((9, 9), torch.cat(outputs_autoencoder_list, dim=0), y)]
+        #pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.cat(outputs_autoencoder_list, dim=0), y)]
+        #pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.cat(outputs_autoencoder_list, dim=0), y)]
+        #pair_avg_distances[(9, 9)] = pair_avg_distances[(9, 9)] + [sampled_avg_distance((9, 9), torch.cat(outputs_autoencoder_list, dim=0), y)]
 
-    within_4 = pair_avg_distances[(4,4)]
-    within_9 = pair_avg_distances[(9, 9)]
-    between = pair_avg_distances[(4,9)]
+    #within_4 = pair_avg_distances[(4,4)]
+    #within_9 = pair_avg_distances[(9, 9)]
+    #between = pair_avg_distances[(4,9)]
 
 
-
+    '''
     plt.plot(list(range(len(within_4))), within_4, label='Within 4', marker='o', color='green')  # First line with markers
     plt.plot(list(range(len(within_9))), within_9, label='Within 9', marker='s',color='green')  # First line with markers
     plt.plot(list(range(len(between))), between, label='Between 4 and 9', marker='x', color = "blue")  # Second line with different markers
@@ -113,7 +114,7 @@ if __name__ == "__main__":
     plt.title("Distance between 4 and 9 and within 4 before, during and after both training CNN")
     plt.savefig("Distance between 4 and 9 and within 4 before, during and after both training CNN trial 2.png")
     plt.show()
-    
+    '''
 
     #measuring accuracy
 
