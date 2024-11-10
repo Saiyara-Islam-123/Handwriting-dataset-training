@@ -1,7 +1,8 @@
-import matplotlib.pyplot as plt
 import random
 import torch.nn.functional
 import create_dataset
+
+random.seed(0)
 
 def sampled_avg_distance(pair, X, y):
 
@@ -16,23 +17,28 @@ def sampled_avg_distance(pair, X, y):
             if row == pair[1]:
                 X_second.append(X[i])
 
+    #I want to have batch sizes of 20 then do average. Then average the averages
     distances = []
+    averages = []
     for i in range(4000):
-        index1 = random.randint(0, 400)
-        index2 = random.randint(0, 400)
+        for j in range(20):
+            distances = []
+            index1 = random.randint(0, 400)
+            index2 = random.randint(0, 400)
 
-        mat_1 = X_first[index1]
-        mat_2 = X_second[index2]
+            mat_1 = X_first[index1]
+            mat_2 = X_second[index2]
 
-        mat_1_flattened = mat_1.view(mat_1.size(0), -1)
-        mat_2_flattened = mat_2.view(mat_2.size(0), -1)
+            mat_1_flattened = mat_1.view(mat_1.size(0), -1)
+            mat_2_flattened = mat_2.view(mat_2.size(0), -1)
 
-        mat_1_flattened_normalized = torch.nn.functional.normalize(mat_1_flattened, p=2, dim=1)
-        mat_2_flattened_normalized = torch.nn.functional.normalize(mat_2_flattened, p=2, dim=1)
+            mat_1_flattened_normalized = torch.nn.functional.normalize(mat_1_flattened, p=2, dim=1)
+            mat_2_flattened_normalized = torch.nn.functional.normalize(mat_2_flattened, p=2, dim=1)
 
-        distances.append(torch.norm(mat_1_flattened_normalized - mat_2_flattened_normalized))
+            distances.append(torch.norm(mat_1_flattened_normalized - mat_2_flattened_normalized))
+        averages.append(sum(distances)/len(distances))
 
-    return (sum(distances) / len(distances)).item()
+    return (sum(averages) / len(averages)).tolist()
 
 
 #I basically find the Euclidean distance between two random datapoints from these two bigger matrices.
@@ -40,5 +46,6 @@ def sampled_avg_distance(pair, X, y):
 
 
 if __name__ == '__main__':
-    print(sampled_avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels()))
-    print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))
+    x = sampled_avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels())
+    print(type(x))
+    #print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))

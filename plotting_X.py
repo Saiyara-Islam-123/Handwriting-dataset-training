@@ -53,7 +53,7 @@ def plot(X, y, epoch, is_sup):
     plt.ylabel('PC2')
     plt.grid(True)
 
-    plt.savefig(is_sup + " X during training scatter plot for sample " + str(epoch))
+    plt.savefig(is_sup + " X during training scatter plot for sample, reduced epoch " + str(epoch))
     plt.show()
 
 

@@ -1,4 +1,8 @@
+
+#I'm using confusion matrices found in a paper to decide which pairs of digits look similar and which look dissimilar
 def confusion_matrix(file_name):
+   
+   #Reading file, addidng each row as its own 
    with open(file_name, 'r') as file:
         lines = file.readlines()
         cm = []

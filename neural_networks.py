@@ -24,6 +24,8 @@ class AutoEncoder(nn.Module):
 
         )
 
+
+
         self.decoder = torch.nn.Sequential(
 
             nn.Linear(128, 64 * 4 * 4),
@@ -38,6 +40,7 @@ class AutoEncoder(nn.Module):
             nn.Sigmoid()  # Sigmoid to ensure the output is between 0 and 1
 
         )
+
 
     def forward(self, x):
         encoded = self.encoder(x)
