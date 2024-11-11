@@ -47,5 +47,5 @@ def sampled_avg_distance(pair, X, y):
 
 if __name__ == '__main__':
     x = sampled_avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels())
-    print(type(x))
+    #print(type(x))
     #print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))
