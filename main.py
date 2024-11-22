@@ -1,5 +1,5 @@
 
-import neural_networks
+import neural_networks2
 from torch import optim
 import torch.nn as nn
 from sampling import *
@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
         #plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1, "pre-training")
 
-        model = neural_networks.AutoEncoder()
+        model = neural_networks2.AutoEncoder()
         loss_fn = nn.MSELoss()
 
         optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=0.0001)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
 
 
-        model_2 = neural_networks.LastLayer(model)
+        model_2 = neural_networks2.LastLayer(model)
 
         model_2.train()
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
 
         plt.xlim(0, 11)  # Set x-axis range from 2 to 8
-        plt.ylim(0, 10)
+        plt.ylim(0, 5)
 
         plt.plot(list(range(len(within_1))), within_1, label='Within 4', marker='o', color='green')  # First line with markers
         plt.plot(list(range(len(within_0))), within_0, label='Within 9', marker='s',color='green')  # First line with markers
@@ -120,7 +120,7 @@ if __name__ == "__main__":
         plt.xlabel("Phases")
         plt.ylabel("Distances")
         plt.title("Distance between 4 and 9 and within 4 before, during and after both training CNN")
-        plt.savefig("Average of averages distance between 4 and 9 and within 4 before, during and after both training CNN trial 2, seed")
+        plt.savefig("Average of averages distance between 4 and 9 and within 4 before, during and after both training CNN trial 2, seed, neural networks 2")
         plt.show()
 
 

@@ -23,8 +23,8 @@ def sampled_avg_distance(pair, X, y):
     for i in range(4000):
         for j in range(20):
             distances = []
-            index1 = random.randint(0, 400)
-            index2 = random.randint(0, 400)
+            index1 = random.randint(0, len(X_first) - 1)
+            index2 = random.randint(0, len(X_second) - 1)
 
             mat_1 = X_first[index1]
             mat_2 = X_second[index2]
@@ -46,6 +46,6 @@ def sampled_avg_distance(pair, X, y):
 
 
 if __name__ == '__main__':
-    x = sampled_avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels())
-    #print(type(x))
+    x = sampled_avg_distance((4,4),create_dataset.get_inputs(), create_dataset.get_labels())
+    print(x)
     #print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))
