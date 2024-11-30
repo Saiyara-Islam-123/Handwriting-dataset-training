@@ -20,11 +20,24 @@ def sampled_avg_distance(pair, X, y):
     #I want to have batch sizes of 20 then do average. Then average the averages
     distances = []
     averages = []
+    d = {}
     for i in range(4000):
         for j in range(20):
             distances = []
-            index1 = random.randint(0, len(X_first) - 1)
-            index2 = random.randint(0, len(X_second) - 1)
+            index1 = random.randint(0, len(X_first) - 1) #44
+            index2 = random.randint(0, len(X_second) - 1) #43
+
+            pair = X_first[index1], X_second[index2]
+            pair_inverse = X_second[index2], X_first[index1] #43 44
+
+            while pair in d or pair_inverse in d or index1 == index2:
+                index1 = random.randint(0, len(X_first) - 1)
+                index2 = random.randint(0, len(X_second) - 1)
+                pair = X_first[index1], X_second[index2]
+                pair_inverse = X_second[index2], X_first[index1]
+
+
+            d[pair] = True
 
             mat_1 = X_first[index1]
             mat_2 = X_second[index2]
@@ -46,6 +59,6 @@ def sampled_avg_distance(pair, X, y):
 
 
 if __name__ == '__main__':
-    x = sampled_avg_distance((4,4),create_dataset.get_inputs(), create_dataset.get_labels())
+    x = sampled_avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels())
     print(x)
     #print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))
