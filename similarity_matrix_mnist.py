@@ -21,27 +21,35 @@ def get_category_data(dataset_img, dataset_label, category):
     """Retrieve all images in the dataset belonging to a specified category and flatten them."""
 
 
-
+    data = []
     for i in range(len(dataset_img)):
         img = dataset_img[i]
         label = dataset_label[i]
 
         if label == category:
-            data = [img]
-    return torch.tensor(data)
+            data.append(img)
+
+
+    return torch.tensor(np.array(data))
 
 
 def calculate_average_cosine_similarity(data1, data2):
     """Calculate the average cosine similarity between two sets of flattened images."""
 
+
+    print(data1.shape)
+    print(data2.shape)
+
     if (len(data1.shape)) == 2:
 
-        data1 = data1.reshape(128, 1)
-        data2 = data2.reshape(128, 1)
+
+
+        data1 = data1.reshape(data1.shape[0], 128)
+        data2 = data2.reshape(data2.shape[0], 128)
 
     else:
-        data1 = data1.reshape(784,1)
-        data2 = data2.reshape(784, 1)
+        data1 = data1.reshape(data1.shape[0], 784)
+        data2 = data2.reshape(data2.shape[0], 784)
 
     similarity = cosine_similarity(data1, data2)
     upper_triangle = similarity[np.triu_indices_from(similarity, k=1)]
@@ -86,10 +94,10 @@ def plot_similarity_matrix(matrix, s):
     plt.colorbar(label='Cosine Similarity')
     plt.xticks(ticks=range(10), labels=range(10))
     plt.yticks(ticks=range(10), labels=range(10))
-    plt.title("Pairwise Cosine Similarity Matrix")
+    plt.title("Pairwise Cosine Similarity Matrix" + str(s))
     plt.xlabel("Digit Category")
     plt.ylabel("Digit Category")
-    plt.savefig("Cosine Similarity " +str(s)+".png")
+    #plt.savefig("Cosine Similarity " +str(s)+".png")
     plt.show()
 
 

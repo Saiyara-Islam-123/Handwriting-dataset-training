@@ -35,6 +35,8 @@ def compute_pairwise_similarities(dataset):
     for cat1, cat2 in itertools.combinations(categories, 2):
         data1 = get_category_data(dataset, cat1)
         data2 = get_category_data(dataset, cat2)
+        print(data1.shape)
+        print(data2.shape)
 
         # Calculate the average cosine similarity for the pair (cat1, cat2)
         avg_similarity = calculate_average_cosine_similarity(data1, data2)
@@ -68,7 +70,7 @@ def plot_similarity_matrix(matrix):
     plt.xlabel("Digit Category")
     plt.ylabel("Digit Category")
 
-    plt.savefig("Cosine Similarity Pre-training" + ".png")
+    #plt.savefig("Cosine Similarity Pre-training" + ".png")
     plt.show()
 
 
