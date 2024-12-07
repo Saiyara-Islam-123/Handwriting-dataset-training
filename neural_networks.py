@@ -6,6 +6,7 @@ class AutoEncoder(nn.Module):
 
     def __init__(self):
         super().__init__()
+        self.encoded = None
 
         self.encoder = torch.nn.Sequential(
 
@@ -43,8 +44,8 @@ class AutoEncoder(nn.Module):
 
 
     def forward(self, x):
-        encoded = self.encoder(x)
-        decoded = self.decoder(encoded)
+        self.encoded = self.encoder(x)
+        decoded = self.decoder(self.encoded)
         return decoded
 
 

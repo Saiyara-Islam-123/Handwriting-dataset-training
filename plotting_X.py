@@ -48,12 +48,13 @@ def plot(X, y, epoch, is_sup):
 
         plt.scatter(x_axis, y_axis, color=color, s=1)
 
-    plt.title('X sample scatter plot during ' + is_sup + ' training '  + str(epoch))
-    plt.xlabel('PC1')
-    plt.ylabel('PC2')
+    plt.title('Scatter plot during ' + is_sup + ' training '  + str(epoch))
+    plt.xlabel('Dimension 1')
+    plt.ylabel('Dimension 2')
     plt.grid(True)
 
-    plt.savefig(is_sup + " X during training scatter plot for sample, reduced epoch " + str(epoch))
+    plt.savefig(is_sup + " X during training scatter plot for sample, 10 epochs each, seeds 0" + str(epoch))
+
     plt.show()
 
 
