@@ -56,7 +56,7 @@ def plot(dict_loss, dict_acc, is_sup):
 
 if __name__ == "__main__":
 
-        #dict_unsup_epoch_to_upper_triangle = {}
+        dict_unsup_epoch_to_upper_triangle = {}
         torch.manual_seed(0)
 
         X = create_dataset.get_inputs()
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         loss_dict = {}
 
         print("\nUnsupervised part!")
-        for epoch in range(10):
+        for epoch in range(5):
 
             encoder_outputs_list = []
             labels_list = []
@@ -124,8 +124,8 @@ if __name__ == "__main__":
             #print(outputs_list_flattened.shape)
             #print(labels_list_flattened.shape)
 
-            #pairwise_similarity_matrix = compute_pairwise_similarities(outputs_list_flattened, labels_list_flattened)
-            #plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " unsup, 10 epochs")
+            pairwise_similarity_matrix = compute_pairwise_similarities(outputs_list_flattened, labels_list_flattened)
+            plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " unsup, 5 epochs")
 
             #outputs_filtered, y_filtered = plotting_X.filter(torch.tensor(outputs_list_flattened), y, [1, 0, 4, 9])
             #plotting_X.plot(outputs_filtered, y_filtered, epoch, "unsup")
@@ -137,7 +137,7 @@ if __name__ == "__main__":
             #pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.tensor(outputs_list_flattened), y)]
 
 
-            #dict_unsup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
+            dict_unsup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
             dict_unsup_epoch_loss[epoch] = loss.item()
 
             print(f"Epoch {epoch}, Loss: {loss.item()}")
@@ -153,11 +153,11 @@ if __name__ == "__main__":
 
 
         print("\nSupervised part!")
-        #dict_sup_epoch_to_upper_triangle = {}
+        dict_sup_epoch_to_upper_triangle = {}
 
         ###################################################################################################
 
-        for epoch in range(10):
+        for epoch in range(5):
             outputs_autoencoder_list = []
             labels_autoencoder_list = []
             for i in range(len(batches)):
@@ -177,14 +177,14 @@ if __name__ == "__main__":
             labels_autoencoder_flattened = np.array([item for sublist in labels_autoencoder_list for item in sublist])
 
 
-            #pairwise_similarity_matrix = compute_pairwise_similarities(outputs_autoencoder_flattened, labels_autoencoder_flattened)
-            #plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " sup, 10 epochs")
+            pairwise_similarity_matrix = compute_pairwise_similarities(outputs_autoencoder_flattened, labels_autoencoder_flattened)
+            plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " sup, 5 epochs")
 
 
             #outputs_sup_filtered, y_filtered_sup = plotting_X.filter(torch.tensor(outputs_autoencoder_flattened), y, [1, 0, 4, 9])
             #plotting_X.plot(outputs_sup_filtered, y_filtered_sup, epoch, "sup")
 
-            #dict_sup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
+            dict_sup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
             dict_sup_epoch_loss[epoch] = loss.item()
             dict_sup_epoch_acc[epoch] = acc(model_2)
 
@@ -223,15 +223,15 @@ if __name__ == "__main__":
 
 
 
-        #df_unsup_triangle = pd.DataFrame(dict_unsup_epoch_to_upper_triangle)
-        #df_sup_triangle = pd.DataFrame(dict_sup_epoch_to_upper_triangle)
-        #df_unsup_triangle.to_csv('unsup_triangle 5 epochs each.csv', index=False)
-        #df_sup_triangle.to_csv('sup_triangle.csv 5 epochs each', index=False)
+        df_unsup_triangle = pd.DataFrame(dict_unsup_epoch_to_upper_triangle)
+        df_sup_triangle = pd.DataFrame(dict_sup_epoch_to_upper_triangle)
+        df_unsup_triangle.to_csv('unsup_triangle 5 epochs each.csv', index=False)
+        df_sup_triangle.to_csv('sup_triangle.csv 5 epochs each.csv', index=False)
 
 
         #plotting
-        plot(dict_unsup_epoch_loss, {}, "unsup")
-        plot(dict_sup_epoch_loss, dict_sup_epoch_acc, "sup")
+        #plot(dict_unsup_epoch_loss, {}, "unsup")
+        #plot(dict_sup_epoch_loss, dict_sup_epoch_acc, "sup")
 
 
     
