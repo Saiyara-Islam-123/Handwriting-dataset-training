@@ -17,7 +17,7 @@ def plot_stretch_matrix(upper_triangular_values, s):
     vmin = min(upper_triangular_values.tolist())
     vmax = max(upper_triangular_values.tolist())
 
-    
+
 
     plt.figure(figsize=(8, 6))
     # Create a mask for the lower triangular part and the diagonal
@@ -47,7 +47,7 @@ def upper_triangle(csv_file_unsup, csv_file_sup):
 
     #print((numpy_array_sup[:, 0] - numpy_array_unsup[:, col-1]))
 
-    return (numpy_array_sup[:, 0] - numpy_array_unsup[:, col-1])
+    return (numpy_array_sup[:, col-1] - numpy_array_unsup[:, col-1])
 
 
 def fill_matrix(upper_triangle):

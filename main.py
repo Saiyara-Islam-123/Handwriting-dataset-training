@@ -68,11 +68,11 @@ if __name__ == "__main__":
         #pair_avg_distances[(0, 0)] = [sampled_avg_distance((0, 0), X, y)]
 
 
-        #X_filtered, y_filtered = plotting_X.filter(X, y, [1, 0, 4, 9])
+        X_filtered, y_filtered = plotting_X.filter(X, y, [1, 0, 4, 9])
 
         #print(X_filtered.shape)
 
-        #plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1, "pre-training")
+        plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1, "pre-training")
 
         dict_unsup_epoch_loss = {}
         dict_sup_epoch_loss = {}
@@ -95,7 +95,7 @@ if __name__ == "__main__":
         #plot_similarity_matrix(pairwise_similarity_matrix, str(-1) + " pretraining")
 
         #dict_unsup_epoch_to_upper_triangle[-1] = upper_triangle(pairwise_similarity_matrix)
-
+        '''
         loss_dict = {}
 
         print("\nUnsupervised part!")
@@ -201,7 +201,7 @@ if __name__ == "__main__":
         #within_0 = pair_avg_distances[(0, 0)]
         #between = pair_avg_distances[(1, 0)]
 
-        '''
+        
         plt.xlim(0, 21)  # Set x-axis range from 2 to 8
         plt.ylim(0, 10)
 
@@ -217,7 +217,7 @@ if __name__ == "__main__":
 
         plt.show()
         
-        '''
+        
 
         #measuring accuracy
 
@@ -235,3 +235,4 @@ if __name__ == "__main__":
 
 
     
+        '''
