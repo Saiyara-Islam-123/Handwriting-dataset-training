@@ -9,6 +9,7 @@ from similarity_matrix_mnist import *
 import numpy as np
 import pandas as pd
 from accuracy import *
+import json
 
 def plot(dict_loss, dict_acc, is_sup):
     plt.xlim(0, 10)  # Set x-axis range from 2 to 8
@@ -51,16 +52,12 @@ def plot(dict_loss, dict_acc, is_sup):
 
 
 
-
-
-
 if __name__ == "__main__":
-
-        dict_unsup_epoch_to_upper_triangle = {}
+        #dict_unsup_epoch_to_upper_triangle = {}
         torch.manual_seed(0)
 
-        X = create_dataset.get_inputs()
-        y = create_dataset.get_labels()
+        #X = create_dataset.get_inputs() #I wanna sample from here
+        #y = create_dataset.get_labels()
 
         #pair_avg_distances = {}
         #pair_avg_distances[(1,1)] = [sampled_avg_distance((1, 1), X , y)]
@@ -68,11 +65,9 @@ if __name__ == "__main__":
         #pair_avg_distances[(0, 0)] = [sampled_avg_distance((0, 0), X, y)]
 
 
-        X_filtered, y_filtered = plotting_X.filter(X, y, [1, 0, 4, 9])
-
         #print(X_filtered.shape)
 
-        plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1, "pre-training")
+        #plotting_X.plot(X_filtered.reshape(X_filtered.shape[0], 784), y_filtered, -1, "pre-training")
 
         dict_unsup_epoch_loss = {}
         dict_sup_epoch_loss = {}
@@ -95,7 +90,7 @@ if __name__ == "__main__":
         #plot_similarity_matrix(pairwise_similarity_matrix, str(-1) + " pretraining")
 
         #dict_unsup_epoch_to_upper_triangle[-1] = upper_triangle(pairwise_similarity_matrix)
-        '''
+
         loss_dict = {}
 
         print("\nUnsupervised part!")
@@ -121,11 +116,14 @@ if __name__ == "__main__":
             outputs_list_flattened = np.array([item for sublist in encoder_outputs_list for item in sublist])
             labels_list_flattened = np.array([item for sublist in labels_list for item in sublist])
 
+
+
+
             #print(outputs_list_flattened.shape)
             #print(labels_list_flattened.shape)
 
-            pairwise_similarity_matrix = compute_pairwise_similarities(outputs_list_flattened, labels_list_flattened)
-            plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " unsup, 5 epochs")
+            #pairwise_similarity_matrix = compute_pairwise_similarities(outputs_list_flattened, labels_list_flattened)
+            #plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " unsup, 5 epochs")
 
             #outputs_filtered, y_filtered = plotting_X.filter(torch.tensor(outputs_list_flattened), y, [1, 0, 4, 9])
             #plotting_X.plot(outputs_filtered, y_filtered, epoch, "unsup")
@@ -137,12 +135,14 @@ if __name__ == "__main__":
             #pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.tensor(outputs_list_flattened), y)]
 
 
-            dict_unsup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
-            dict_unsup_epoch_loss[epoch] = loss.item()
+            #dict_unsup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
+            #dict_unsup_epoch_loss[epoch] = loss.item()
 
             print(f"Epoch {epoch}, Loss: {loss.item()}")
 
-
+        unsup_output_dict = {"unsup outputs": outputs_list_flattened.tolist()}
+        with open("unsup.json", "w") as f:
+            json.dump(unsup_output_dict, f)
 
         model_2 = neural_networks.LastLayer(model)
 
@@ -177,16 +177,18 @@ if __name__ == "__main__":
             labels_autoencoder_flattened = np.array([item for sublist in labels_autoencoder_list for item in sublist])
 
 
-            pairwise_similarity_matrix = compute_pairwise_similarities(outputs_autoencoder_flattened, labels_autoencoder_flattened)
-            plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " sup, 5 epochs")
+
+
+            #pairwise_similarity_matrix = compute_pairwise_similarities(outputs_autoencoder_flattened, labels_autoencoder_flattened)
+            #plot_similarity_matrix(pairwise_similarity_matrix, str(epoch) + " sup, 5 epochs")
 
 
             #outputs_sup_filtered, y_filtered_sup = plotting_X.filter(torch.tensor(outputs_autoencoder_flattened), y, [1, 0, 4, 9])
             #plotting_X.plot(outputs_sup_filtered, y_filtered_sup, epoch, "sup")
 
-            dict_sup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
-            dict_sup_epoch_loss[epoch] = loss.item()
-            dict_sup_epoch_acc[epoch] = acc(model_2)
+            #dict_sup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
+            #dict_sup_epoch_loss[epoch] = loss.item()
+            #dict_sup_epoch_acc[epoch] = acc(model_2)
 
             print(f"Epoch {epoch}, Loss: {loss.item()}")
 
@@ -196,26 +198,30 @@ if __name__ == "__main__":
             #pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.tensor(outputs_autoencoder_flattened), y)]
             #pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.tensor(outputs_autoencoder_flattened), y)]
 
+        sup_output_dict = {"sup outputs": outputs_autoencoder_flattened.tolist()}
+        with open("sup.json", "w") as f:
+            json.dump(sup_output_dict, f)
+
 
         #within_1= pair_avg_distances[(1,1)]
         #within_0 = pair_avg_distances[(0, 0)]
         #between = pair_avg_distances[(1, 0)]
 
         
-        plt.xlim(0, 21)  # Set x-axis range from 2 to 8
-        plt.ylim(0, 10)
+        #plt.xlim(0, 21)  # Set x-axis range from 2 to 8
+        #plt.ylim(0, 10)
 
-        plt.plot(list(range(len(within_1))), within_1, label='Within 1', marker='o', color='green')  # First line with markers
-        plt.plot(list(range(len(within_0))), within_0, label='Within 0', marker='s',color='green')  # First line with markers
-        plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "blue")  # Second line with different markers
+        #plt.plot(list(range(len(within_1))), within_1, label='Within 1', marker='o', color='green')  # First line with markers
+        #plt.plot(list(range(len(within_0))), within_0, label='Within 0', marker='s',color='green')  # First line with markers
+        #plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "blue")  # Second line with different markers
     
-        plt.xlabel("Phases of training")
-        plt.ylabel("Distances")
-        plt.title("Within and between 1 and 0")
-        plt.legend()
-        plt.savefig("Average of averages distance between 1 and 0 and within 1 and 0, seeds 0, 10 epochs each")
+        #plt.xlabel("Phases of training")
+        #plt.ylabel("Distances")
+        #plt.title("Within and between 1 and 0")
+        #plt.legend()
+        #plt.savefig("Average of averages distance between 1 and 0 and within 1 and 0, seeds 0, 10 epochs each")
 
-        plt.show()
+        #plt.show()
         
         
 
@@ -223,10 +229,10 @@ if __name__ == "__main__":
 
 
 
-        df_unsup_triangle = pd.DataFrame(dict_unsup_epoch_to_upper_triangle)
-        df_sup_triangle = pd.DataFrame(dict_sup_epoch_to_upper_triangle)
-        df_unsup_triangle.to_csv('unsup_triangle 5 epochs each.csv', index=False)
-        df_sup_triangle.to_csv('sup_triangle.csv 5 epochs each.csv', index=False)
+        #df_unsup_triangle = pd.DataFrame(dict_unsup_epoch_to_upper_triangle)
+        #df_sup_triangle = pd.DataFrame(dict_sup_epoch_to_upper_triangle)
+        #df_unsup_triangle.to_csv('unsup_triangle 5 epochs each.csv', index=False)
+        #df_sup_triangle.to_csv('sup_triangle.csv 5 epochs each.csv', index=False)
 
 
         #plotting
@@ -235,4 +241,3 @@ if __name__ == "__main__":
 
 
     
-        '''

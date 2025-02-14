@@ -19,7 +19,7 @@ def filter(X, y, list_digits):
     X_filtered = []
     y_filtered = []
 
-    for i in range(5000):
+    for i in range(60000):
 
         if y[i] in list_digits:
             y_filtered.append(y[i])
