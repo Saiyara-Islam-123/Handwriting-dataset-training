@@ -21,8 +21,10 @@ def sample(X_filtered1, X_filtered_2, num_samples):
     for i in range(num_samples):
         rolled_num1 = random.randint(0, total_datapoints1 - 1)
         rolled_num2 = random.randint(0, total_datapoints2 - 1)
+        while rolled_num1 == rolled_num2:
+            rolled_num2 = random.randint(0, total_datapoints2 - 1)
 
-        if (rolled_num1, rolled_num2) not in pairs:
+        if (rolled_num1, rolled_num2) not in pairs and (rolled_num1, rolled_num2) not in pairs :
             pairs[(rolled_num1, rolled_num2)] = (1 - cosine_similarity(X_filtered1[rolled_num1].reshape(1, 784),
                                                                       X_filtered_2[rolled_num2].reshape(1, 784))).tolist()[0]
     return pairs
@@ -69,9 +71,10 @@ def format(x):
     return float(x)
 
 if __name__ == "__main__":
-    df_pre = pd.read_csv("no_training_distance.csv").iloc[:10000]
-    df_unsup = pd.read_csv("unsup_training_distance.csv").iloc[:10000]
-    df_sup = pd.read_csv("sup_training_distance.csv").iloc[:10000]
+
+    df_pre = pd.read_csv("no_training_distance 4.csv").iloc[:10000]
+    df_unsup = pd.read_csv("unsup_training_distance 4.csv").iloc[:10000]
+    df_sup = pd.read_csv("sup_training_distance 4.csv").iloc[:10000]
 
     df_pre["1-cos sim"] = df_pre['1-cos sim'].map(format)
     df_unsup["1-cos sim"] = df_unsup['1-cos sim'].map(format)
@@ -79,14 +82,14 @@ if __name__ == "__main__":
 
 
     fig, ax = plt.subplots()
-    ax.plot(df_pre["Pair"], df_pre["1-cos sim"], label="No Train", color="royalblue", marker = "o")
-    ax.plot(df_unsup["Pair"], df_unsup["1-cos sim"], label="Unsup", color="blue")
-    ax.plot(df_sup["Pair"], df_sup["1-cos sim"], label="Sup", color="navy", alpha=0.5)
+    ax.plot(df_pre["Pair"], df_pre["1-cos sim"], label="No Train", color="darkgreen")
+    ax.plot(df_unsup["Pair"], df_unsup["1-cos sim"], label="Unsup", color="lime")
+    ax.plot(df_sup["Pair"], df_sup["1-cos sim"], label="Sup", color="darkgreen", alpha=0.3)
 
     ax.set_xticks([])
     ax.set_ylabel("1-cos similarity")
     ax.set_xlabel("Pairs")
-    ax.set_title("4 and 9 between dist")
+    ax.set_title("Within 4 dist")
     ax.legend()
     plt.show()
 
@@ -96,20 +99,26 @@ if __name__ == "__main__":
     #with open("sup.json", "r") as f:
         #loaded_dict = json.load(f)
 
-    #encoder_output_unsup = torch.tensor(loaded_dict["sup outputs"])
+    #encoder_output_sup = torch.tensor(loaded_dict["sup outputs"])
 
 
-    #X = encoder_output_unsup
+    #X = encoder_output_sup
     #y = get_labels()
     #X_filtered1, _ = filter(X, y, [4])
-    #X_filtered2, _ = filter(X, y, [9])
-    #df = pd.read_csv("no_training_distance.csv")
+    #X_filtered2, _ = filter(X, y, [4])
+    #pairs = sample(X_filtered1, X_filtered2, 10000)
+    #sorted_pairs = sort(pairs)
+    #df = pd.DataFrame(list(sorted_pairs.items()), columns=["Pair", "1-cos sim"])
+    #df.to_csv("no_training_distance 4.csv", index=False)
+
+
+    #df = pd.read_csv("no_training_distance 4.csv")
     #pairs_list = list(map(ast.literal_eval, df["Pair"].tolist()))
 
     #pairs = pairs_to_cosine_similarity(pairs_list, X_filtered1, X_filtered2)
 
     #df = pd.DataFrame(list(pairs.items()), columns=["Pair", "1-cos sim"])
-    #df.to_csv("sup_training_distance.csv", index=False)
+    #df.to_csv("sup_training_distance 4.csv", index=False)
 
     
     #pairs = sample(X_filtered1, X_filtered2, 10000)
