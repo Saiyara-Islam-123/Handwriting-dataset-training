@@ -56,13 +56,13 @@ if __name__ == "__main__":
         #dict_unsup_epoch_to_upper_triangle = {}
         torch.manual_seed(0)
 
-        #X = create_dataset.get_inputs() #I wanna sample from here
-        #y = create_dataset.get_labels()
+        X = create_dataset.get_inputs() #I wanna sample from here
+        y = create_dataset.get_labels()
 
-        #pair_avg_distances = {}
-        #pair_avg_distances[(1,1)] = [sampled_avg_distance((1, 1), X , y)]
-        #pair_avg_distances[(1, 0)] = [sampled_avg_distance((1, 0), X, y)]
-        #pair_avg_distances[(0, 0)] = [sampled_avg_distance((0, 0), X, y)]
+        pair_avg_distances = {}
+        pair_avg_distances[(4,4)] = [sampled_avg_distance((4, 4), X , y)]
+        pair_avg_distances[(4, 9)] = [sampled_avg_distance((4, 9), X, y)]
+        pair_avg_distances[(9, 9)] = [sampled_avg_distance((9, 9), X, y)]
 
 
         #print(X_filtered.shape)
@@ -82,8 +82,8 @@ if __name__ == "__main__":
 
 
 
-        batches = list(torch.split(inputs, 64))
-        batches_of_labels = list(torch.split(create_dataset.get_labels(), 64))
+        batches = list(torch.split(inputs, 1))
+        batches_of_labels = list(torch.split(create_dataset.get_labels(), 1))
 
 
         #pairwise_similarity_matrix = compute_pairwise_similarities(X.numpy(), y.numpy())
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         loss_dict = {}
 
         print("\nUnsupervised part!")
-        for epoch in range(5):
+        for epoch in range(2):
 
             encoder_outputs_list = []
             labels_list = []
@@ -130,9 +130,9 @@ if __name__ == "__main__":
 
 
 
-            #pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.tensor(outputs_list_flattened), y)]
-            #pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.tensor(outputs_list_flattened), y)]
-            #pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.tensor(outputs_list_flattened), y)]
+            pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.tensor(outputs_list_flattened), y)]
+            pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.tensor(outputs_list_flattened), y)]
+            pair_avg_distances[(9, 9)] = pair_avg_distances[(9, 9)] + [sampled_avg_distance((9, 9), torch.tensor(outputs_list_flattened), y)]
 
 
             #dict_unsup_epoch_to_upper_triangle[epoch] = upper_triangle(pairwise_similarity_matrix)
@@ -140,9 +140,9 @@ if __name__ == "__main__":
 
             print(f"Epoch {epoch}, Loss: {loss.item()}")
 
-        unsup_output_dict = {"unsup outputs": outputs_list_flattened.tolist()}
-        with open("unsup.json", "w") as f:
-            json.dump(unsup_output_dict, f)
+        #unsup_output_dict = {"unsup outputs": outputs_list_flattened.tolist()}
+        #with open("unsup.json", "w") as f:
+            #json.dump(unsup_output_dict, f)
 
         model_2 = neural_networks.LastLayer(model)
 
@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
         ###################################################################################################
 
-        for epoch in range(5):
+        for epoch in range(2):
             outputs_autoencoder_list = []
             labels_autoencoder_list = []
             for i in range(len(batches)):
@@ -194,34 +194,34 @@ if __name__ == "__main__":
 
             #print(model_2.autoencoder_output.shape)
 
-            #pair_avg_distances[(1, 1)] = pair_avg_distances[(1, 1)] + [sampled_avg_distance((1, 1), torch.tensor(outputs_autoencoder_flattened), y)]
-            #pair_avg_distances[(1, 0)] = pair_avg_distances[(1, 0)] + [sampled_avg_distance((1, 0), torch.tensor(outputs_autoencoder_flattened), y)]
-            #pair_avg_distances[(0, 0)] = pair_avg_distances[(0, 0)] + [sampled_avg_distance((0, 0), torch.tensor(outputs_autoencoder_flattened), y)]
+            pair_avg_distances[(4, 4)] = pair_avg_distances[(4, 4)] + [sampled_avg_distance((4, 4), torch.tensor(outputs_autoencoder_flattened), y)]
+            pair_avg_distances[(4, 9)] = pair_avg_distances[(4, 9)] + [sampled_avg_distance((4, 9), torch.tensor(outputs_autoencoder_flattened), y)]
+            pair_avg_distances[(9, 9)] = pair_avg_distances[(9, 9)] + [sampled_avg_distance((9, 9), torch.tensor(outputs_autoencoder_flattened), y)]
 
-        sup_output_dict = {"sup outputs": outputs_autoencoder_flattened.tolist()}
-        with open("sup.json", "w") as f:
-            json.dump(sup_output_dict, f)
+        #sup_output_dict = {"sup outputs": outputs_autoencoder_flattened.tolist()}
+        #with open("sup.json", "w") as f:
+            #json.dump(sup_output_dict, f)
 
 
-        #within_1= pair_avg_distances[(1,1)]
-        #within_0 = pair_avg_distances[(0, 0)]
-        #between = pair_avg_distances[(1, 0)]
+        within_4= pair_avg_distances[(4,4)]
+        within_9 = pair_avg_distances[(9, 9)]
+        between = pair_avg_distances[(4, 9)]
 
         
-        #plt.xlim(0, 21)  # Set x-axis range from 2 to 8
-        #plt.ylim(0, 10)
+        plt.xlim(0, 6)  # Set x-axis range from 2 to 8
+        plt.ylim(0, 10)
 
-        #plt.plot(list(range(len(within_1))), within_1, label='Within 1', marker='o', color='green')  # First line with markers
-        #plt.plot(list(range(len(within_0))), within_0, label='Within 0', marker='s',color='green')  # First line with markers
-        #plt.plot(list(range(len(between))), between, label='Between 1 and 0', marker='x', color = "blue")  # Second line with different markers
+        plt.plot(list(range(len(within_4))), within_4, label='Within 4', marker='o', color='green')  # First line with markers
+        plt.plot(list(range(len(within_9))), within_9, label='Within 9', marker='s',color='green')  # First line with markers
+        plt.plot(list(range(len(between))), between, label='Between 4 and 9', marker='x', color = "blue")  # Second line with different markers
     
-        #plt.xlabel("Phases of training")
-        #plt.ylabel("Distances")
-        #plt.title("Within and between 1 and 0")
-        #plt.legend()
-        #plt.savefig("Average of averages distance between 1 and 0 and within 1 and 0, seeds 0, 10 epochs each")
+        plt.xlabel("Phases of training")
+        plt.ylabel("Distances")
+        plt.title("Within and between 4 and 9")
+        plt.legend()
+        plt.savefig("Average of averages distance between 4 and 9 and within 4 and 9, seeds 0, 10 epochs each, batch of 1")
 
-        #plt.show()
+        plt.show()
         
         
 
