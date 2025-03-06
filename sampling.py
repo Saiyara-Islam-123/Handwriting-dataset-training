@@ -21,7 +21,7 @@ def sampled_avg_distance(pair, X, y):
     distances = []
     averages = []
     d = {}
-    for i in range(4000):
+    for i in range(500):
         for j in range(20):
             distances = []
             index1 = random.randint(0, len(X_first) - 1) #44
