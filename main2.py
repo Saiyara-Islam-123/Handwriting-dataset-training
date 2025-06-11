@@ -1,7 +1,7 @@
 import neural_networks
 from torch import optim
 import torch.nn as nn
-from sampling import *
+from dist import *
 # import plotting_X
 import matplotlib.pyplot as plt
 from synthetic_data_generation import *
