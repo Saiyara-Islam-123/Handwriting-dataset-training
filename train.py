@@ -50,8 +50,7 @@ def train_unsup(tup, batch_size, lr):
             pair_avg_distances[(f, s)].append(avg_distance((f, s), encoder_output, labels))
             pair_avg_distances[(s, s)].append(avg_distance((s, s), encoder_output, labels))
 
-            torch.save(model.state_dict(),
-                       "Batch: " + str(i) + " " + str(batch_size) + " " + str(lr) + " unsup_model.pt")
+            torch.save(model.state_dict(), "unsup_weights/" + str(i) + " " + str(batch_size) + " " + str(lr) + " unsup_model.pth")
 
 
             print(loss.item())
@@ -106,7 +105,7 @@ def train_sup(unsup_model, tup, lr, batch_size):
             pair_avg_distances[(f, s)].append(avg_distance((f, s), encoder_outputs, labels))
             pair_avg_distances[(s,s)].append(avg_distance((s, s), encoder_outputs, labels))
 
-            torch.save(model_2.state_dict(), "sup_weights/Batch: " + str(i) + " " + str(batch_size) + " " + str(lr) + " sup_model.pt")
+            torch.save(model_2.state_dict(), "sup_weights/" +str(i) + " " + str(batch_size) + " " + str(lr) + " sup_model.pth")
 
 
             loss.backward()
@@ -128,11 +127,11 @@ def train_sup(unsup_model, tup, lr, batch_size):
 
 def plot(tup, num_unsup_rows, num_sup_rows):
     f,s = tup
-    df_unsup = pd.read_csv("Unsup1 0.csv")
+    df_unsup = pd.read_csv("Unsup 1 0 lr=0.05")
     df_unsup = df_unsup.tail(num_unsup_rows)
 
 
-    df_sup = pd.read_csv("Sup Slowed down1 0 lr=0.001")
+    df_sup = pd.read_csv("Sup Slowed down 1 0 lr=0.005")
     df_sup = df_sup.head(num_sup_rows)
 
 
@@ -172,11 +171,11 @@ def plot(tup, num_unsup_rows, num_sup_rows):
 
 if __name__ == '__main__':
     batch_size = 100
-    lr = 0.0001
+    lr = 0.005
 
-    train_unsup(tup=(1,0), batch_size=batch_size, lr=lr)
+    #train_unsup(tup=(1,0), batch_size=batch_size, lr=0.05)
     #unsup_model = neural_networks.AutoEncoder()
-    #unsup_model.load_state_dict(torch.load(str(batch_size) + " " + str(lr) + " unsup_model.pt"))
+    #unsup_model.load_state_dict(torch.load("unsup_weights/599 100 0.05 unsup_model.pth"))
     #train_sup(unsup_model, tup=(1,0), batch_size=batch_size, lr=lr)
 
-    #plot(tup=(1,0), num_unsup_rows=30, num_sup_rows=30)
+    plot(tup=(1,0), num_unsup_rows=30, num_sup_rows=30)
