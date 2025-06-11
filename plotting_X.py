@@ -2,9 +2,11 @@ import matplotlib.pyplot as plt
 import tnse
 import create_dataset
 import torch
+torch.random.manual_seed(0)
+import neural_networks
 
-labels_colors = {1 : "b",
-                 2: "g",
+labels_colors = {1 : "limegreen",
+                 2: "pink",
                  3 : "r",
                  4 : "c",
                  5: "m",
@@ -12,14 +14,14 @@ labels_colors = {1 : "b",
                  7: "k",
                  8: "orange",
                  9: "purple",
-                 0: "pink"
+                 0: "green"
                  }
 
 def filter(X, y, list_digits):
     X_filtered = []
     y_filtered = []
 
-    for i in range(60000):
+    for i in range(y.shape[0]):
 
         if y[i] in list_digits:
             y_filtered.append(y[i])
@@ -29,9 +31,7 @@ def filter(X, y, list_digits):
     return torch.stack(X_filtered), torch.stack(y_filtered)
 
 
-
-
-def plot(X, y, epoch, is_sup):
+def plot(X, y, epoch, batch, is_sup, name):
     X_tnse = tnse.of_two(X.view(X.shape[0], -1).detach().numpy())
     y_np = y.numpy()
 
@@ -46,19 +46,49 @@ def plot(X, y, epoch, is_sup):
 
         color = labels_colors[y_np[i]]
 
-        plt.scatter(x_axis, y_axis, color=color, s=1)
+        plt.scatter(x_axis, y_axis, color=color, s=10)
+    plt.scatter([], [], color="limegreen", label="1")
+    plt.scatter([], [], color="green", label='0')
 
-    plt.title('Scatter plot during ' + is_sup + ' training '  + str(epoch))
+    plt.title('Scatter plot during ' + is_sup + ' training, epoch: '  + str(epoch) + " batch: " + str(batch))
     plt.xlabel('Dimension 1')
     plt.ylabel('Dimension 2')
-    plt.grid(True)
 
-    plt.savefig(is_sup + " X during training scatter plot for sample, 10 epochs each, seeds 0" + str(epoch))
+    plt.savefig(name.strip(".pth")+".png")
 
     plt.show()
 
+def plot_across_batches(weights):
+    X, y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1]))
+
+    if "unsup_model.pth" in weights.split(" "):
+        is_sup = "unsup"
+    else:
+        is_sup = "sup"
+
+    indices = torch.randperm(X.size(0))
+    split = int(0.03 * X.size(0))
+
+    indices = indices[:split]
+    X, y = X[indices], y[indices]
+
+    if is_sup=="sup":
+        unsup_model = neural_networks.AutoEncoder()
+        unsup_model.load_state_dict(torch.load("unsup_weights/599 100 0.05 unsup_model.pth"))
+        sup_model = neural_networks.LastLayer(unsup_model)
+        sup_model.load_state_dict(torch.load("sup_weights/"+weights))
+        _ = sup_model(X)
+        encoder_outputs = sup_model.autoencoder_output
+
+
+    else:
+        unsup_model = neural_networks.AutoEncoder()
+        unsup_model.load_state_dict(torch.load("unsup_weights/"+weights))
+        _ = unsup_model(X)
+        encoder_outputs = unsup_model.encoded
+
+    plot(encoder_outputs, y, epoch=weights.split(" ")[0], batch=str(1), is_sup=is_sup, name=weights)
 
 if __name__ == '__main__':
-    X,y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1, 4,9]))
-
-    plot(X.reshape(X.shape[0], 784), y, -1, "Pre-training")
+        i=599
+        plot_across_batches(f"{i} 100 0.05 unsup_model.pth")
