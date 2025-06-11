@@ -90,5 +90,4 @@ def plot_across_batches(weights):
     plot(encoder_outputs, y, epoch=weights.split(" ")[0], batch=str(1), is_sup=is_sup, name=weights)
 
 if __name__ == '__main__':
-        i=599
-        plot_across_batches(f"{i} 100 0.05 unsup_model.pth")
+        plot_across_batches("599 100 0.05 unsup_model.pth")

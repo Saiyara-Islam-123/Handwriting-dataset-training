@@ -105,7 +105,7 @@ def train_sup(unsup_model, tup, lr, batch_size):
             pair_avg_distances[(f, s)].append(avg_distance((f, s), encoder_outputs, labels))
             pair_avg_distances[(s,s)].append(avg_distance((s, s), encoder_outputs, labels))
 
-            torch.save(model_2.state_dict(), "sup_weights/" +str(i) + " " + str(batch_size) + " " + str(lr) + " sup_model.pth")
+            torch.save(model_2.state_dict(), "sup_weights/0.05/" +str(i) + " " + str(batch_size) + " " + str(lr) + " sup_model.pth")
 
 
             loss.backward()
@@ -119,7 +119,7 @@ def train_sup(unsup_model, tup, lr, batch_size):
     df["between"] = pair_avg_distances[(f, s)]
     df["Accuracy"] = accs
 
-    df.to_csv("Sup Slowed down " + str(f) + " " + str(s) + " lr=" + str(lr), index=False)
+    df.to_csv("Sup fast " + str(f) + " " + str(s) + " lr=" + str(lr), index=False)
 
 
 def plot_per_batch(tup, num_unsup_rows, num_sup_rows, time_step):
@@ -128,7 +128,7 @@ def plot_per_batch(tup, num_unsup_rows, num_sup_rows, time_step):
     df_unsup = df_unsup.tail(num_unsup_rows)
 
 
-    df_sup = pd.read_csv("Sup Slowed down 1 0 lr=0.005")
+    df_sup = pd.read_csv("Sup fast 1 0 lr=0.05")
     df_sup = df_sup.head(num_sup_rows)
 
 
@@ -217,12 +217,12 @@ def plot_skip_batch(tup, time_step):
 
 if __name__ == '__main__':
     batch_size = 100
-    lr = 0.005
+    lr = 0.05
 
     #train_unsup(tup=(1,0), batch_size=batch_size, lr=0.05)
     #unsup_model = neural_networks.AutoEncoder()
     #unsup_model.load_state_dict(torch.load("unsup_weights/599 100 0.05 unsup_model.pth"))
     #train_sup(unsup_model, tup=(1,0), batch_size=batch_size, lr=lr)
 
-    for i in range(-1, 24):
-        plot_skip_batch(tup=(1,0), time_step=i)
+    for i in range(-1, 40):
+        plot_per_batch(tup=(1,0), num_unsup_rows=30, num_sup_rows=40, time_step=i)

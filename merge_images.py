@@ -14,7 +14,10 @@ def merge(im1, im2):
         new_im.paste(im, (x_offset, 0))
         x_offset += im.size[0]
 
-    new_im.save("1.png")
+    #new_im.save("Combined " +im1.strip(".png") + ".png")
+    new_im.save('1merged.png')
 
-#for i in range(0, 600, 25):
-merge("unsup plots unsup=0.05, sup=0.005, every 25 batches/-25 Acc distance plot 0 1.png", "unsup plots unsup=0.05, sup=0.005, every 25 batches/599 100 0.05 unsup_model.png")
+#for i in range(0, 40):
+    #merge(f"{i} Acc distance plot 0 1.png", f'{i} 100 0.05 sup_model.png')
+
+merge("unsup plots unsup=0.05, sup=0.05, per batch/-1 Acc distance plot 0 1.png","unsup plots unsup=0.05, sup=0.05, per batch/599 100 0.05 unsup_model.png")
