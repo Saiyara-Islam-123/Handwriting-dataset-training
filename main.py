@@ -2,7 +2,7 @@ import neural_networks
 from torch import optim
 import torch.nn as nn
 from dist import *
-import plotting_X
+import plotting
 import matplotlib.pyplot as plt
 from similarity_matrix_mnist import *
 import numpy as np
