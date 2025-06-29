@@ -1,4 +1,6 @@
 import random
+
+import pandas as pd
 import torch.nn.functional
 import create_dataset
 
@@ -8,8 +10,9 @@ def avg_distance(pair, X, y):
 
     X_first = []
     X_second = []
+    print(X.size(), y.size())
 
-    for i in range(y.size(0)):
+    for i in range(100):
         row = y[i]
         if row in pair:
             if row == pair[0]:
@@ -50,6 +53,13 @@ def avg_distance(pair, X, y):
 
 
 if __name__ == '__main__':
-    x = avg_distance((4,9),create_dataset.get_inputs(), create_dataset.get_labels())
-    print(x)
+    between = avg_distance((1,0),create_dataset.get_inputs(), create_dataset.get_labels())
+    within_1 =  avg_distance((1,1),create_dataset.get_inputs(), create_dataset.get_labels())
+    within_0 = avg_distance((0, 0), create_dataset.get_inputs(), create_dataset.get_labels())
     #print(sampled_avg_distance((4, 4), create_dataset.get_inputs(), create_dataset.get_labels()))
+    df = pd.DataFrame()
+    df["between"] = [between]
+    df["within_1"] = [within_1]
+    df["within_0"] = [within_0]
+
+    df.to_csv("no_train_0_1.csv", index=False)

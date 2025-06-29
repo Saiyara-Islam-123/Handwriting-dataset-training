@@ -31,7 +31,7 @@ def filter(X, y, list_digits):
     return torch.stack(X_filtered), torch.stack(y_filtered)
 
 
-def plot(X, y, epoch, batch, is_sup, name):
+def plot(X, y, epoch, batch, is_sup, name, loc):
     X_tnse = tnse.of_two(X.view(X.shape[0], -1).detach().numpy())
     y_np = y.numpy()
 
@@ -53,12 +53,13 @@ def plot(X, y, epoch, batch, is_sup, name):
     plt.title('Scatter plot during ' + is_sup + ' training, epoch: '  + str(epoch) + " batch: " + str(batch))
     plt.xlabel('Dimension 1')
     plt.ylabel('Dimension 2')
+    plt.legend()
 
-    plt.savefig(name.strip(".pth")+".png")
+    plt.savefig(f"{loc}/"+name.strip(".pth")+".png")
 
     plt.show()
 
-def plot_across_batches(weights):
+def plot_across_batches(batch, weights,loc):
     X, y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1]))
 
     if "unsup_model.pth" in weights.split(" "):
@@ -76,7 +77,7 @@ def plot_across_batches(weights):
         unsup_model = neural_networks.AutoEncoder()
         unsup_model.load_state_dict(torch.load("unsup_weights/599 100 0.05 unsup_model.pth"))
         sup_model = neural_networks.LastLayer(unsup_model)
-        sup_model.load_state_dict(torch.load("sup_weights/"+weights))
+        sup_model.load_state_dict(torch.load("sup_weights/0.005/"+weights))
         _ = sup_model(X)
         encoder_outputs = sup_model.autoencoder_output
 
@@ -87,7 +88,22 @@ def plot_across_batches(weights):
         _ = unsup_model(X)
         encoder_outputs = unsup_model.encoded
 
-    plot(encoder_outputs, y, epoch=weights.split(" ")[0], batch=str(1), is_sup=is_sup, name=weights)
+    plot(encoder_outputs, y, epoch=0, batch=batch, is_sup=is_sup, name=weights.split(" ")[0], loc=loc)
 
 if __name__ == '__main__':
-        plot_across_batches("599 100 0.05 unsup_model.pth")
+    '''
+    X, y = (filter(create_dataset.get_inputs(), create_dataset.get_labels(), [0, 1]))
+    indices = torch.randperm(X.size(0))
+    split = int(0.03 * X.size(0))
+
+    indices = indices[:split]
+    X, y = X[indices], y[indices]
+
+    plot(X, y, epoch="", batch="", is_sup="", name="no_train", loc="new_plots/scatter_plots/no_train")
+
+
+    '''
+    for i in range(600):
+            if i % 10 == 0:
+                plot_across_batches(weights=f"{int(i)} 100 0.05 unsup_model.pth", loc="new_plots/scatter_plots/unsup", batch=(i))
+    

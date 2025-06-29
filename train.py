@@ -105,7 +105,7 @@ def train_sup(unsup_model, tup, lr, batch_size):
             pair_avg_distances[(f, s)].append(avg_distance((f, s), encoder_outputs, labels))
             pair_avg_distances[(s,s)].append(avg_distance((s, s), encoder_outputs, labels))
 
-            torch.save(model_2.state_dict(), "sup_weights/0.05/" +str(i) + " " + str(batch_size) + " " + str(lr) + " sup_model.pth")
+            torch.save(model_2.state_dict(), f"sup_weights/{lr}/" +str(i) + " " + str(batch_size) + " " + str(lr) + " sup_model.pth")
 
 
             loss.backward()
@@ -119,28 +119,31 @@ def train_sup(unsup_model, tup, lr, batch_size):
     df["between"] = pair_avg_distances[(f, s)]
     df["Accuracy"] = accs
 
-    df.to_csv("Sup fast " + str(f) + " " + str(s) + " lr=" + str(lr), index=False)
+    df.to_csv("Sup " + str(f) + " " + str(s) + " lr=" + str(lr), index=False)
 
 
-def plot_per_batch(tup, num_unsup_rows, num_sup_rows, time_step):
+def plot_per_batch(tup, num_unsup_rows, num_sup_rows, time_step, sup_df, loc):
     f,s = tup
+    df_no_train = pd.read_csv("no_train_0_1.csv")
+
+
     df_unsup = pd.read_csv("Unsup 1 0 lr=0.05")
     df_unsup = df_unsup.tail(num_unsup_rows)
 
 
-    df_sup = pd.read_csv("Sup fast 1 0 lr=0.05")
+    df_sup = pd.read_csv(sup_df)
     df_sup = df_sup.head(num_sup_rows)
 
 
     accs = df_sup["Accuracy"].apply(scale)
     df_sup.drop(columns=["Accuracy"], inplace=True)
 
-    df_whole = pd.concat([df_unsup, df_sup])
+    df_whole = pd.concat([df_no_train, df_unsup, df_sup])
     x = []
-    for i in range(num_unsup_rows+num_sup_rows):
+    for i in range(1+num_unsup_rows+num_sup_rows):
         x.append(i)
     x2 = []
-    for i in range(num_unsup_rows, num_unsup_rows+num_sup_rows):
+    for i in range(num_unsup_rows+1, num_unsup_rows+num_sup_rows+1):
         x2.append(i)
 
     fig, ax1 = plt.subplots()
@@ -149,10 +152,10 @@ def plot_per_batch(tup, num_unsup_rows, num_sup_rows, time_step):
     ax1.plot(x, df_whole['within ' + str(s)], color="green", label='within ' + str(s))
     ax1.plot(x, df_whole['between'], color="blue", label="between")
 
-
-    ax1.axvline(x=num_unsup_rows-1, color='r', linestyle='--')
+    ax1.axvline(x=0, color='r', linestyle='--')
+    ax1.axvline(x=num_unsup_rows, color='r', linestyle='--')
     ax1.set_ylabel('Distance')
-    ax1.axvline(x=time_step + num_unsup_rows, color='black', linestyle='dashed')
+    ax1.axvline(x=time_step, color='black', linestyle='dashed')
     ax1.legend()
 
     ax2 = ax1.twinx()
@@ -162,67 +165,78 @@ def plot_per_batch(tup, num_unsup_rows, num_sup_rows, time_step):
 
     plt.xlabel("Epoch")
     plt.title(str(f) + " " + str(s) + " distances and accuracy across batches")
-    plt.savefig(str(time_step) + " Acc distance plot 0 1.png")
+    plt.savefig(f"{loc}/"+str(time_step) + " Acc distance plot 0 1.png")
     plt.show()
 
-def plot_skip_batch(tup, time_step):
-    f,s = tup
+def plot_skip_batch(tup, skip_batch, time_step, sup_df, loc):
+
+    f, s = tup
+    df_no_train = pd.read_csv("no_train_0_1.csv")
 
     df_unsup = pd.read_csv("Unsup 1 0 lr=0.05")
-    df_unsup = df_unsup.tail(600)
-    rows_unsup = []
+    unsup_rows = []
 
-    df_sup = pd.read_csv("Sup Slowed down 1 0 lr=0.005")
-    df_sup = df_sup.head(600)
-    rows_sup = []
+    for i in range(len(df_unsup["between"])):
+        if i % skip_batch == 0:
+            unsup_rows.append(df_unsup.loc[i])
 
-    for r in range(len(df_unsup["between"])):
-        if r % 25 == 0:
-            rows_unsup.append(df_unsup.iloc[r])
-            rows_sup.append(df_sup.iloc[r])
+    df_unsup = pd.DataFrame(unsup_rows)
+    num_unsup_rows = len(unsup_rows)
 
-    df_unsup = pd.DataFrame(rows_unsup)
-    df_sup = pd.DataFrame(rows_sup)
+    df_sup = pd.read_csv(sup_df)
+    sup_rows = []
+    for i in range(len(df_sup["between"])):
+        if i % skip_batch == 0:
+            sup_rows.append(df_sup.loc[i])
+    df_sup = pd.DataFrame(sup_rows)
+    num_sup_rows = len(sup_rows)
 
     accs = df_sup["Accuracy"].apply(scale)
     df_sup.drop(columns=["Accuracy"], inplace=True)
 
-    df_whole = pd.concat([df_unsup, df_sup])
+    df_whole = pd.concat([df_no_train, df_unsup, df_sup])
     x = []
-    for k in range(48):
-        x.append(k)
+    for i in range(1 + num_unsup_rows + num_sup_rows):
+        x.append(i)
     x2 = []
-    for k in range(24, 48):
-        x2.append(k)
+    for i in range(num_unsup_rows + 1, num_unsup_rows + num_sup_rows + 1):
+        x2.append(i)
 
     fig, ax1 = plt.subplots()
-    ax1.plot(x, df_whole['within 1'], color="limegreen", label="within 1")
-    ax1.plot(x, df_whole['within 0'], color="green", label="within 0")
+
+    ax1.plot(x, df_whole['within ' + str(f)], color="limegreen", label='within ' + str(f))
+    ax1.plot(x, df_whole['within ' + str(s)], color="green", label='within ' + str(s))
     ax1.plot(x, df_whole['between'], color="blue", label="between")
-    ax1.axvline(x=23, color='r', linestyle='--')
+
+    ax1.axvline(x=0, color='r', linestyle='--')
+    ax1.axvline(x=num_unsup_rows, color='r', linestyle='--')
     ax1.set_ylabel('Distance')
+    ax1.axvline(x=time_step, color='black', linestyle='dashed')
     ax1.legend()
 
     ax2 = ax1.twinx()
     ax2.plot(x2, accs, color="coral", label="accuracy")
-    ax1.axvline(x=time_step + 24, color='black', linestyle='dashed')
     ax2.set_ylabel('Accuracy')
 
     plt.xlabel("Epoch")
     plt.title(str(f) + " " + str(s) + " distances and accuracy across batches")
-    plt.savefig(str(time_step * 25) + " Acc distance plot 0 1.png")
+    plt.savefig(f"{loc}/" + str(time_step) + " Acc distance plot 0 1.png")
     plt.show()
 
 
 
 if __name__ == '__main__':
+
     batch_size = 100
-    lr = 0.05
+    lr = 0.0001
 
     #train_unsup(tup=(1,0), batch_size=batch_size, lr=0.05)
-    #unsup_model = neural_networks.AutoEncoder()
-    #unsup_model.load_state_dict(torch.load("unsup_weights/599 100 0.05 unsup_model.pth"))
-    #train_sup(unsup_model, tup=(1,0), batch_size=batch_size, lr=lr)
+    '''
+    unsup_model = neural_networks.AutoEncoder()
+    unsup_model.load_state_dict(torch.load("unsup_weights/599 100 0.05 unsup_model.pth"))
+    train_sup(unsup_model, tup=(1,0), batch_size=batch_size, lr=lr)
 
-    for i in range(-1, 40):
-        plot_per_batch(tup=(1,0), num_unsup_rows=30, num_sup_rows=40, time_step=i)
+    '''
+    for i in range(0, 121):
+        plot_skip_batch(tup=(1,0), time_step=i, sup_df="Sup Slowed down 1 0 lr=0.005", loc="new_plots/blue-green/fast_lr", skip_batch=10)
+    
