@@ -21,18 +21,16 @@ def merge(im1, im2, loc, index):
 #merge(im1= "new_plots/blue-green/fast_lr/0 Acc distance plot 0 1.png", im2="new_plots/scatter_plots/no_train/no_train.png", loc="new_plots/combined/fast")
 
 
-lines = os.listdir("new_plots/blue-green/slow_lr")
-scatter_plots = os.listdir("new_plots/scatter_plots/unsup")
-print(lines)
+lines = os.listdir("new_plots/blue-green/fast_lr/sup")
+scatter_plots = os.listdir("new_plots/scatter_plots/sup_fast")
 
-'''
-for i in range(len(lines)):
-    a = "new_plots/blue-green/slow_lr/"+lines[i]
-    b = "new_plots/scatter_plots/unsup/"+scatter_plots[i]
 
-    merge(a, b, loc="new_plots/combined/slow", index=i)
+for i in range(61, 121):
+    a = f"new_plots/blue-green/fast_lr/sup/{i} Acc distance plot 0 1.png"
+    b = f"new_plots/scatter_plots/sup_fast/{(i-61)*10} 100 0.005 sup_model.png"
+
+    merge(a, b, loc="new_plots/combined/fast", index=i)
 
 
 #merge("unsup plots unsup=0.05, sup=0.05, per batch/-1 Acc distance plot 0 1.png","unsup plots unsup=0.05, sup=0.05, per batch/599 100 0.05 unsup_model.png")
 
-'''
