@@ -20,14 +20,10 @@ def merge(im1, im2, loc, index):
 
 #merge(im1= "new_plots/blue-green/fast_lr/0 Acc distance plot 0 1.png", im2="new_plots/scatter_plots/no_train/no_train.png", loc="new_plots/combined/fast")
 
-#for i in range(1, 61):
 
-
-
-lines = os.listdir("new_plots/blue-green/slow_lr")[1:61]
+lines = os.listdir("new_plots/blue-green/slow_lr")
 scatter_plots = os.listdir("new_plots/scatter_plots/unsup")
-print(scatter_plots)
-
+print(lines)
 
 '''
 for i in range(len(lines)):
